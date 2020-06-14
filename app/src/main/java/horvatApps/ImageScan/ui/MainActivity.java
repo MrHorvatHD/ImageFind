@@ -16,8 +16,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -35,7 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
     private RecyclerView recyclerView;
+    private RecyclerViewAdapter recyclerViewAdapter;
+    private EditText searchField;
+
     private ArrayList<ImageDetail> imageList;
+    private ArrayList<ImageDetail> searchedImages;
     private ArrayList<String> imageFolders;
 
 
@@ -45,8 +52,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initUiElements();
-        permissionHandle();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        permissionHandle();
     }
 
     public void initUiElements() {
@@ -55,33 +67,59 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+        searchField = findViewById(R.id.editText);
+        searchField.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+
+                if(s.toString().length()>0)
+                    updateRecycler(s.toString());
+                else{
+                    searchedImages.clear();
+                    searchedImages.addAll(imageList);
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
         recyclerView = findViewById(R.id.recyclerImages);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerView.setAdapter(new RecyclerViewAdapter(this, new ArrayList<ImageDetail>()));
+        recyclerViewAdapter = new RecyclerViewAdapter(this, new ArrayList<ImageDetail>());
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 
-    public void handleSharedPref(){
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
-        boolean scanned = sharedPref.getBoolean("Scanned", false);
-        if(!scanned){
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+
+    public void updateRecycler(String searchText){
+        searchedImages.clear();
+
+        System.out.println(searchText);
+
+        for(ImageDetail img : imageList){
+            if(img.getName().contains(searchText))
+                searchedImages.add(img);
         }
-        else{
 
-        HashSet<String> selectedFolders = new HashSet<>();
+        System.out.println(searchedImages.toString());
+        recyclerViewAdapter.notifyDataSetChanged();
 
-        imageFolders = new ArrayList<String>(sharedPref.getStringSet("Folders", new HashSet<String>()));
-
-        readImages();
-        }
     }
+
+    /*
+    GET ALL SCANNED IMAGES
+    ----------------------------------------------------------------------------------------------------------
+     */
 
     private void readImages() {
         imageList = getImageList();
-        recyclerView.setAdapter(new RecyclerViewAdapter(this, imageList));
+        searchedImages = new ArrayList<ImageDetail>(imageList);
+        recyclerViewAdapter = new RecyclerViewAdapter(this, searchedImages);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
-
 
     private ArrayList<ImageDetail> getImageList() {
         ArrayList<ImageDetail> imageDetail = new ArrayList<ImageDetail>();
@@ -135,6 +173,34 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    /*
+    HANDLE SHARED PREFFERENCES
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+    public void handleSharedPref(){
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
+        boolean scanned = sharedPref.getBoolean("Scanned", false);
+        if(!scanned){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        else{
+
+            HashSet<String> selectedFolders = new HashSet<>();
+
+            imageFolders = new ArrayList<String>(sharedPref.getStringSet("Folders", new HashSet<String>()));
+
+            readImages();
+        }
+    }
+
+
+    /*
+    PERMISSIONS
+    ----------------------------------------------------------------------------------------------------------
+     */
 
     public void permissionHandle() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==

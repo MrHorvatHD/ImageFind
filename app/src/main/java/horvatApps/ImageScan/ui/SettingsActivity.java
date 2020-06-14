@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -37,9 +38,6 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         initUiElements();
-        permissionHandle();
-
-
     }
 
     public void initUiElements() {
@@ -48,6 +46,10 @@ public class SettingsActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+    }
+
+    public void newScan(View v){
+        permissionHandle();
     }
 
     /*

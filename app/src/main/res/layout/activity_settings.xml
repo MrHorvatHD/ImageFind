@@ -25,15 +25,18 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <Spinner
-        android:id="@+id/spinnerFolders"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="246dp"
+        android:layout_marginEnd="162dp"
+        android:text="New Scan"
+        android:onClick="newScan"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_layout2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
