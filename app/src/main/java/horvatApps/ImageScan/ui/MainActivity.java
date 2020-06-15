@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,15 +25,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.amitshekhar.DebugDB;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import horvatApps.ImageScan.Adapters.RecyclerViewAdapter;
 import horvatApps.ImageScan.R;
-import horvatApps.ImageScan.db.ImageDetail;
-import horvatApps.ImageScan.db.ImageFolder;
+import horvatApps.ImageScan.db.models.ImageDetail;
+import horvatApps.ImageScan.db.models.ImageEntityDB;
+import horvatApps.ImageScan.db.models.Mapper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ImageDetail> imageList;
     private ArrayList<ImageDetail> searchedImages;
     private ArrayList<String> imageFolders;
+    private ArrayList<ImageDetail> imagesFromDB = new ArrayList<ImageDetail>();
 
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +59,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initUiElements();
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        observerSetup();
 
+    }
+
+    private void test() {
+        imageFolders = new ArrayList<>();
+        imageFolders.add("'Fotor_PES'");
+
+        searchedImages = getImageList();
+
+        System.out.println(searchedImages.get(0).getName());
+
+        mainViewModel.insertImage(Mapper.imageDetailToImageEntity(searchedImages.get(0)));
     }
 
     @Override
@@ -68,13 +88,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         searchField = findViewById(R.id.editText);
-        searchField.addTextChangedListener(new TextWatcher() {
+        /*searchField.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
 
-                if(s.toString().length()>0)
+                if (s.toString().length() > 0)
                     updateRecycler(s.toString());
-                else{
+                else {
                     searchedImages.clear();
                     searchedImages.addAll(imageList);
                     recyclerViewAdapter.notifyDataSetChanged();
@@ -82,32 +102,51 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        });
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });*/
 
         recyclerView = findViewById(R.id.recyclerImages);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerViewAdapter = new RecyclerViewAdapter(this, new ArrayList<ImageDetail>());
+        recyclerViewAdapter = new RecyclerViewAdapter(this, imagesFromDB);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
 
-    public void updateRecycler(String searchText){
+    public void observerSetup(){
+        mainViewModel.getAllImages().observe(this, new Observer<List<ImageEntityDB>>() {
+
+            @Override
+            public void onChanged(List<ImageEntityDB> imageEntityDBS) {
+
+                imagesFromDB.clear();
+                for (ImageEntityDB imageEntityDB : imageEntityDBS){
+                    imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
+                }
+
+                recyclerViewAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+
+    /*public void updateRecycler(String searchText) {
         searchedImages.clear();
 
         System.out.println(searchText);
 
-        for(ImageDetail img : imageList){
-            if(img.getName().contains(searchText))
+        for (ImageDetail img : imageList) {
+            if (img.getName().contains(searchText))
                 searchedImages.add(img);
         }
 
         System.out.println(searchedImages.toString());
         recyclerViewAdapter.notifyDataSetChanged();
 
-    }
+    }*/
 
     /*
     GET ALL SCANNED IMAGES
@@ -117,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     private void readImages() {
         imageList = getImageList();
         searchedImages = new ArrayList<ImageDetail>(imageList);
-        recyclerViewAdapter = new RecyclerViewAdapter(this, searchedImages);
+        recyclerViewAdapter = new RecyclerViewAdapter(this, imagesFromDB);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
@@ -127,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
         String selectionArgs = imageFolders.toString();
-        selectionArgs = selectionArgs.replace("[","(").replace("]",")");
+        selectionArgs = selectionArgs.replace("[", "(").replace("]", ")");
 
         String selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " IN " + selectionArgs;
 
@@ -156,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Stores column values and the contentUri in a local object
                 // that represents the media file.
-                imageDetail.add(new ImageDetail(contentUri, thumb , name));
+                imageDetail.add(new ImageDetail(contentUri, thumb, name));
             }
 
         } catch (Exception e) {
@@ -167,8 +206,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public void onClickSettings(View v){
+    public void onClickSettings(View v) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
 
@@ -179,14 +217,13 @@ public class MainActivity extends AppCompatActivity {
     ----------------------------------------------------------------------------------------------------------
      */
 
-    public void handleSharedPref(){
+    public void handleSharedPref() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         boolean scanned = sharedPref.getBoolean("Scanned", false);
-        if(!scanned){
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        }
-        else{
+        if (!scanned) {
+            /*Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);*/
+        } else {
 
             HashSet<String> selectedFolders = new HashSet<>();
 

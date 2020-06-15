@@ -1,4 +1,4 @@
-package horvatApps.ImageScan.db;
+package horvatApps.ImageScan.db.models;
 
 import android.net.Uri;
 
@@ -6,6 +6,7 @@ public class ImageDetail {
     private Uri uri;
     private String thumb;
     private String name;
+    private String imageText;
 
 
     public ImageDetail(Uri uri, String thumb ,String name){
@@ -24,5 +25,13 @@ public class ImageDetail {
 
     public String getName(){
         return this.name;
+    }
+
+    public String getImageText(){
+        return this.imageText;
+    }
+
+    public void setImageText(String imageText) {
+        this.imageText = imageText;
     }
 }

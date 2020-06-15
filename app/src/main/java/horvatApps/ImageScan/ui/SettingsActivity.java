@@ -2,6 +2,7 @@ package horvatApps.ImageScan.ui;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import horvatApps.ImageScan.R;
+import horvatApps.ImageScan.logic.MLService;
 
 public class SettingsActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -78,7 +80,8 @@ public class SettingsActivity extends AppCompatActivity {
         folderSelectorBuilder.setPositiveButton("Nuke", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                storeSharedPref(foldersFound,checkedItems);
+                //storeSharedPref(foldersFound,checkedItems);
+                testService(foldersFound,checkedItems);
             }
         });
         folderSelectorBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -91,6 +94,21 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     }
+
+    public void testService(String[] foldersFound, boolean[] checked){
+        ArrayList<String> selectedFolders = new ArrayList<String>();
+        for (int i = 0; i < foldersFound.length; i++) {
+            if(checked[i])
+                selectedFolders.add("'" + foldersFound[i] + "'");
+        }
+
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+        Intent intent = new Intent(this, MLService.class);
+        intent.putExtra("allImageFolders", selectedFolders);
+        startService(intent);
+    }
+
 
     /*
     SHARED PREFFERENCES

@@ -64,4 +64,7 @@ dependencies {
     // Material Progress Bar
     implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
     implementation 'com.google.android.material:material:1.2.0-alpha06'
+
+    // Text features
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.0.0'
 }
