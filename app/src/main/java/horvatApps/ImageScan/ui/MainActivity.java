@@ -88,17 +88,12 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         searchField = findViewById(R.id.editText);
-        /*searchField.addTextChangedListener(new TextWatcher() {
+        searchField.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
 
-                if (s.toString().length() > 0)
-                    updateRecycler(s.toString());
-                else {
-                    searchedImages.clear();
-                    searchedImages.addAll(imageList);
-                    recyclerViewAdapter.notifyDataSetChanged();
-                }
+                //if (s.toString().length() >= 0)
+                    mainViewModel.searchImage(s.toString().toLowerCase());
 
             }
 
@@ -107,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
-        });*/
+        });
 
         recyclerView = findViewById(R.id.recyclerImages);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -122,12 +117,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<ImageEntityDB> imageEntityDBS) {
 
-                imagesFromDB.clear();
-                for (ImageEntityDB imageEntityDB : imageEntityDBS){
-                    imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
+                try {
+                    imagesFromDB.clear();
+                    for (ImageEntityDB imageEntityDB : imageEntityDBS){
+                        imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
+                    }
+
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        mainViewModel.getSearchedImages().observe(this, new Observer<List<ImageEntityDB>>() {
+            @Override
+            public void onChanged(List<ImageEntityDB> imageEntityDBS) {
+
+                try {
+                    imagesFromDB.clear();
+                    for (ImageEntityDB imageEntityDB : imageEntityDBS){
+                        imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
+                    }
+
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
 
-                recyclerViewAdapter.notifyDataSetChanged();
             }
         });
     }

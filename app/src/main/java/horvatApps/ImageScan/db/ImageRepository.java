@@ -3,6 +3,7 @@ package horvatApps.ImageScan.db;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class ImageRepository {
     private ImageDAO imageDAO;
 
     private LiveData<List<ImageEntityDB>> allImages;
+    private MutableLiveData<List<ImageEntityDB>> searchedImages = new MutableLiveData<>();
 
     public ImageRepository(Application application){
         Database db;
@@ -34,8 +36,22 @@ public class ImageRepository {
         });
     }
 
+    // retrieves recipe from database
+    public void searchImage(final String param) {
+
+        // run query on the executor, postValue to searchResults
+        Database.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                searchedImages.postValue(imageDAO.searchImages(param));
+            }
+        });
+    }
+
     public LiveData<List<ImageEntityDB>> getAllImages() {
         return allImages;
     }
-
+    public MutableLiveData<List<ImageEntityDB>> getSearchedImages(){
+        return searchedImages;
+    }
 }

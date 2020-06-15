@@ -55,12 +55,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .apply(new RequestOptions().centerCrop().override(512, 512))
                 .into(gridViewHolder.itemImage);
 
-        /*String imgName = recyclerList.get(position).getName();
+        String imgName = recyclerList.get(position).getName();
         if (imgName.length() > 16)
             imgName = imgName.substring(0, 16).concat("...");
 
-        gridViewHolder.itemName.setText(imgName);*/
-        gridViewHolder.itemName.setText(recyclerList.get(position).getImageText());
+        gridViewHolder.itemName.setText(imgName);
+        //gridViewHolder.itemName.setText(recyclerList.get(position).getImageText());
 
 
         gridViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
