@@ -1,21 +1,19 @@
 package horvatApps.ImageScan.logic;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
 
-import com.amitshekhar.DebugDB;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -27,11 +25,8 @@ import com.google.mlkit.vision.text.TextRecognizer;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import horvatApps.ImageScan.db.Database;
 import horvatApps.ImageScan.db.ImageRepository;
 import horvatApps.ImageScan.db.models.ImageDetail;
-import horvatApps.ImageScan.ui.MainViewModel;
-import horvatApps.ImageScan.ui.SettingsActivity;
 
 import static horvatApps.ImageScan.db.models.Mapper.imageDetailToImageEntity;
 
@@ -50,6 +45,12 @@ public class MLService extends IntentService {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     @Override

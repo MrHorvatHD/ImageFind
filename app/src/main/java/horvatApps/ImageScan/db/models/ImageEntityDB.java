@@ -3,9 +3,10 @@ package horvatApps.ImageScan.db.models;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "images")
+@Entity(tableName = "images", indices = @Index(value = {"uri"}, unique = true))
 public class ImageEntityDB {
 
     @PrimaryKey(autoGenerate = true)

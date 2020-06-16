@@ -70,21 +70,21 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         AlertDialog.Builder folderSelectorBuilder = new AlertDialog.Builder(this);
-        folderSelectorBuilder.setTitle("aaaa");
+        folderSelectorBuilder.setTitle(R.string.scanDialogTitle);
         folderSelectorBuilder.setMultiChoiceItems(foldersFound, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 
             }
         });
-        folderSelectorBuilder.setPositiveButton("Nuke", new DialogInterface.OnClickListener() {
+        folderSelectorBuilder.setPositiveButton(R.string.scanDialogConfirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //storeSharedPref(foldersFound,checkedItems);
                 testService(foldersFound,checkedItems);
             }
         });
-        folderSelectorBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+        folderSelectorBuilder.setNeutralButton(R.string.scanDialogCancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

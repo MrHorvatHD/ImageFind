@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">ImageScan</string>
+
+    <string name="scanDialogTitle">Folders to scan</string>
+    <string name="scanDialogConfirm">Scan</string>
+    <string name="scanDialogCancel">Cancel</string>
+
+    <string name="scanButton">New Scan</string>
+    <string name="deleteAllButton">Delete all scans</string>
+
+    <string name="inputFieldHint">Search…</string>
+
+    <string name="dropdownScan">Scan</string>
+    <string name="dropdownAbout">About</string>
+
 </resources>

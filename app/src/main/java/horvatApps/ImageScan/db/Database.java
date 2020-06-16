@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import horvatApps.ImageScan.db.models.ImageEntityDB;
 
-@androidx.room.Database(entities = {ImageEntityDB.class}, version = 1, exportSchema = false)
+@androidx.room.Database(entities = {ImageEntityDB.class}, version = 2, exportSchema = false)
 public abstract class Database extends RoomDatabase {
 
 
@@ -26,7 +26,7 @@ public abstract class Database extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             Database.class, "ScanDB")
-                            .allowMainThreadQueries()
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

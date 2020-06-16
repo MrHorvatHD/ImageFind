@@ -2,6 +2,7 @@ package horvatApps.ImageScan.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
@@ -20,12 +21,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amitshekhar.DebugDB;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
     private EditText searchField;
+    private TextView allPhotos;
 
     private ArrayList<ImageDetail> imageList;
     private ArrayList<ImageDetail> searchedImages;
@@ -81,28 +84,64 @@ public class MainActivity extends AppCompatActivity {
         permissionHandle();
     }
 
+    /*
+    HANDLING OPTIONS MENU CREATION
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+    private SearchView searchView;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.toolbar_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setIconifiedByDefault(false);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String text) {
+                //if(text.length() > 0)
+                    mainViewModel.searchImage(text.toLowerCase());
+                return false;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.dropdown_menu_scan:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.dropdown_menu_about:
+                Toast.makeText(this, "About", Toast.LENGTH_LONG).show();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /*
+    UI ELEMENTS INITIALISATION
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+
     public void initUiElements() {
         appBarLayout = findViewById(R.id.app_bar_layout);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
-
-        searchField = findViewById(R.id.editText);
-        searchField.addTextChangedListener(new TextWatcher() {
-
-            public void afterTextChanged(Editable s) {
-
-                //if (s.toString().length() >= 0)
-                    mainViewModel.searchImage(s.toString().toLowerCase());
-
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-        });
 
         recyclerView = findViewById(R.id.recyclerImages);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -111,22 +150,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void observerSetup(){
+    public void observerSetup() {
         mainViewModel.getAllImages().observe(this, new Observer<List<ImageEntityDB>>() {
 
             @Override
             public void onChanged(List<ImageEntityDB> imageEntityDBS) {
 
-                try {
-                    imagesFromDB.clear();
-                    for (ImageEntityDB imageEntityDB : imageEntityDBS){
-                        imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
-                    }
+                if(searchView.getQuery().length() == 0)
+                    try {
+                        imagesFromDB.clear();
+                        for (ImageEntityDB imageEntityDB : imageEntityDBS) {
+                            imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
+                        }
 
-                    recyclerViewAdapter.notifyDataSetChanged();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+                        recyclerViewAdapter.notifyDataSetChanged();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             }
         });
 
@@ -136,12 +176,12 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     imagesFromDB.clear();
-                    for (ImageEntityDB imageEntityDB : imageEntityDBS){
+                    for (ImageEntityDB imageEntityDB : imageEntityDBS) {
                         imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
                     }
 
                     recyclerViewAdapter.notifyDataSetChanged();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -220,13 +260,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return imageDetail;
-    }
-
-
-    public void onClickSettings(View v) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-
     }
 
     /*
