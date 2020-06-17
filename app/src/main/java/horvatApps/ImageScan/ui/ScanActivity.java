@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Locale;
 
 import horvatApps.ImageScan.R;
@@ -38,6 +38,7 @@ public class ScanActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan);
 
         initUiElements();
+
     }
 
     //initialises UI elements
@@ -47,6 +48,9 @@ public class ScanActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+        TextView lastScanTime = findViewById(R.id.lastScanText);
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
+        lastScanTime.setText(String.format("%s %s", getString(R.string.lastScan), sharedPref.getString("LastScan", "never")));
     }
 
     //handle click on new scan button

@@ -19,4 +19,7 @@
     <string name="notificationContentText">Processed</string>
     <string name="notificationContentTitle">Scan in progress</string>
 
+    <string name="lastScanNever">Last scan: Never</string>
+    <string name="lastScan">Last scan: </string>
+
 </resources>
