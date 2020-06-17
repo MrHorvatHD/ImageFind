@@ -3,11 +3,13 @@ package horvatApps.ImageScan.logic;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -26,10 +28,12 @@ import com.google.mlkit.vision.text.TextRecognizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import horvatApps.ImageScan.R;
 import horvatApps.ImageScan.db.ImageRepository;
 import horvatApps.ImageScan.db.models.ImageDetail;
+import horvatApps.ImageScan.ui.MainActivity;
 
 import static horvatApps.ImageScan.db.models.Mapper.imageDetailToImageEntity;
 
@@ -205,8 +209,9 @@ public class MLForegroundService extends Service {
             return;
         } else {
 
-            NotificationChannel channel = new NotificationChannel("ProgressNotification", getString(R.string.notificationChannelName), NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel("ProgressNotification", getString(R.string.notificationChannelName), NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription(getString(R.string.notificationChannelDescription));
+            channel.setSound(null,null);
 
             notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
@@ -215,13 +220,15 @@ public class MLForegroundService extends Service {
 
     //creates notification that displays the progress of the scan
     private Notification createNotification() {
+
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
                 .setProgress(100,0,false)
-                .setContentTitle(getString(R.string.notificationContentTitle));
+                .setContentTitle(getString(R.string.notificationContentTitle))
+                .setOnlyAlertOnce(true);
 
-        String content = String.format("%s: %d / %d",getString(R.string.notificationContentText), 0, allImagesSelectedForML.size());
+        String content = String.format(Locale.getDefault(),"%s: %d / %d",getString(R.string.notificationContentText), 0, allImagesSelectedForML.size());
         builder.setContentText(content);
 
         return builder.build();
@@ -232,7 +239,7 @@ public class MLForegroundService extends Service {
         builder.setProgress(allImagesSelectedForML.size(),progress,false);
         String content = String.format("%s: %d / %d",getString(R.string.notificationContentText), progress, allImagesSelectedForML.size());
         builder.setContentText(content);
-        notificationManager.notify(69,builder.build());
+        notificationManager.notify(69, builder.build());
     }
 
 }

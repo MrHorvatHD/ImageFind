@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
 import java.net.URI;
@@ -53,7 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         Glide.with(context)
                 .load(recyclerList.get(position).getThumb())
-                .apply(new RequestOptions().centerCrop().override(256, 256))
+                .apply(new RequestOptions().centerCrop().override(Target.SIZE_ORIGINAL, 300))
                 .into(gridViewHolder.itemImage);
 
         gridViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
