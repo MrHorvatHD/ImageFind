@@ -20,15 +20,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import horvatApps.ImageScan.R;
+import horvatApps.ImageScan.logic.MLForegroundService;
 import horvatApps.ImageScan.logic.MLService;
 
-public class SettingsActivity extends AppCompatActivity {
+public class ScanActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
     private Spinner spinner;
@@ -37,7 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_scan);
 
         initUiElements();
     }
@@ -104,7 +104,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
-        Intent intent = new Intent(this, MLService.class);
+        Intent intent = new Intent(this, MLForegroundService.class);
         intent.putExtra("allImageFolders", selectedFolders);
         startService(intent);
     }

@@ -19,13 +19,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -46,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private AppBarLayout appBarLayout;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
-    private EditText searchField;
-    private TextView allPhotos;
 
     private ArrayList<ImageDetail> imageList;
     private ArrayList<ImageDetail> searchedImages;
@@ -65,17 +59,6 @@ public class MainActivity extends AppCompatActivity {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         observerSetup();
 
-    }
-
-    private void test() {
-        imageFolders = new ArrayList<>();
-        imageFolders.add("'Fotor_PES'");
-
-        searchedImages = getImageList();
-
-        System.out.println(searchedImages.get(0).getName());
-
-        mainViewModel.insertImage(Mapper.imageDetailToImageEntity(searchedImages.get(0)));
     }
 
     @Override
@@ -99,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         searchView = (SearchView) searchItem.getActionView();
         searchView.setIconifiedByDefault(false);
 
+        recyclerViewAdapter.notifyDataSetChanged();
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -107,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String text) {
-                //if(text.length() > 0)
-                    mainViewModel.searchImage(text.toLowerCase());
+                mainViewModel.searchImage(text.toLowerCase());
                 return false;
             }
         });
@@ -119,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.dropdown_menu_scan:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                Intent intent = new Intent(this, ScanActivity.class);
                 startActivity(intent);
                 return true;
 
@@ -127,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "About", Toast.LENGTH_LONG).show();
                 return true;
 
+            case R.id.dropdown_menu_settings:
+                Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -144,19 +131,31 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         recyclerView = findViewById(R.id.recyclerImages);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerViewAdapter = new RecyclerViewAdapter(this, imagesFromDB);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
+
+    /*
+    DB OBSERVERS INITIALISATION
+    ----------------------------------------------------------------------------------------------------------
+     */
 
     public void observerSetup() {
         mainViewModel.getAllImages().observe(this, new Observer<List<ImageEntityDB>>() {
 
             @Override
             public void onChanged(List<ImageEntityDB> imageEntityDBS) {
+                int queryLength = 0;
+                try {
+                    queryLength = searchView.getQuery().length();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
 
-                if(searchView.getQuery().length() == 0)
+                if( queryLength == 0)
                     try {
                         imagesFromDB.clear();
                         for (ImageEntityDB imageEntityDB : imageEntityDBS) {
@@ -188,22 +187,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-    /*public void updateRecycler(String searchText) {
-        searchedImages.clear();
-
-        System.out.println(searchText);
-
-        for (ImageDetail img : imageList) {
-            if (img.getName().contains(searchText))
-                searchedImages.add(img);
-        }
-
-        System.out.println(searchedImages.toString());
-        recyclerViewAdapter.notifyDataSetChanged();
-
-    }*/
 
     /*
     GET ALL SCANNED IMAGES

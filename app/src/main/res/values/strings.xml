@@ -12,5 +12,11 @@
 
     <string name="dropdownScan">Scan</string>
     <string name="dropdownAbout">About</string>
+    <string name="dropdownSettings">Settings</string>
+
+    <string name="notificationChannelName">ImageScanNotification</string>
+    <string name="notificationChannelDescription">Notification that visualises progres of image scan</string>
+    <string name="notificationContentText">Processed</string>
+    <string name="notificationContentTitle">Scan in progress</string>
 
 </resources>
