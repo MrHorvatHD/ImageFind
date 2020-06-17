@@ -1,7 +1,6 @@
 package horvatApps.ImageScan.ui;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +9,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,19 +20,18 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 
 import horvatApps.ImageScan.R;
 import horvatApps.ImageScan.logic.MLForegroundService;
-import horvatApps.ImageScan.logic.MLService;
 
 public class ScanActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private AppBarLayout appBarLayout;
-    private Spinner spinner;
-    private ArrayList<String> allImageFolders;
 
+    //builds the view for the activity and initialises UI element
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +40,17 @@ public class ScanActivity extends AppCompatActivity {
         initUiElements();
     }
 
+    //initialises UI elements
     public void initUiElements() {
-        appBarLayout = findViewById(R.id.app_bar_layout2);
-        toolbar = findViewById(R.id.toolbar2);
+        AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout2);
+        Toolbar toolbar = findViewById(R.id.toolbar2);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
     }
 
-    public void newScan(View v){
+    //handle click on new scan button
+    public void newScan(View v) {
         permissionHandle();
     }
 
@@ -59,30 +58,39 @@ public class ScanActivity extends AppCompatActivity {
     FOLDER SELECTOR
     ----------------------------------------------------------------------------------------------------------
      */
+    //builds the folder selector
     private AlertDialog dialogA;
-    public void buildSelector() {
 
-        allImageFolders = getImageFolders();
+    public void buildFolderSelector() {
+
+        //gets all image folder on device an converts
+        ArrayList<String> allImageFolders = getImageFolders();
         final String[] foldersFound = allImageFolders.toArray(new String[allImageFolders.size()]);
+
+        //text replacement for better displaying
         for (int i = 0; i < foldersFound.length; i++) {
-            foldersFound[i] = foldersFound[i].replace("'","");
+            foldersFound[i] = foldersFound[i].replace("'", "");
         }
         final boolean[] checkedItems = new boolean[foldersFound.length];
 
-
+        //builds the selector
         AlertDialog.Builder folderSelectorBuilder = new AlertDialog.Builder(this);
         folderSelectorBuilder.setTitle(R.string.scanDialogTitle);
         folderSelectorBuilder.setMultiChoiceItems(foldersFound, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                //disables scan button if no elements selected
                 dissablePositiveButton(checkedItems);
             }
         });
         folderSelectorBuilder.setPositiveButton(R.string.scanDialogConfirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //storeSharedPref(foldersFound,checkedItems);
-                testService(foldersFound,checkedItems);
+                //stores last scan date in shared prefernces
+                storeSharedPref();
+
+                //starts scanning service
+                startService(foldersFound, checkedItems);
             }
         });
         folderSelectorBuilder.setNeutralButton(R.string.scanDialogCancel, new DialogInterface.OnClickListener() {
@@ -93,11 +101,11 @@ public class ScanActivity extends AppCompatActivity {
         });
         dialogA = folderSelectorBuilder.create();
 
+        //disables scan button on start
         dialogA.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                //if(condition)
-                    ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             }
         });
         dialogA.show();
@@ -105,32 +113,39 @@ public class ScanActivity extends AppCompatActivity {
 
     }
 
+    //dissables scan button if no folders selected
+    public void dissablePositiveButton(boolean[] checkedItems) {
 
-    public void dissablePositiveButton(boolean[] checkedItems){
-
-        if(allFalse(checkedItems))
+        if (allFalse(checkedItems))
             dialogA.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
         else
             dialogA.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
     }
 
-    public boolean allFalse(boolean[] checked){
-        for(boolean bool : checked)
-            if(bool) return false;
+    //checks if no folders are selected
+    public boolean allFalse(boolean[] checked) {
+        for (boolean bool : checked)
+            if (bool) return false;
 
         return true;
     }
 
+    /*
+    OCR SERVICE INITIALISATION
+    ----------------------------------------------------------------------------------------------------------
+     */
 
-    public void testService(String[] foldersFound, boolean[] checked){
+    //starts the OCR service
+    public void startService(String[] foldersFound, boolean[] checked) {
+
+        //builds the list of all folders to scan
         ArrayList<String> selectedFolders = new ArrayList<String>();
         for (int i = 0; i < foldersFound.length; i++) {
-            if(checked[i])
+            if (checked[i])
                 selectedFolders.add("'" + foldersFound[i] + "'");
         }
 
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
+        //starts the foreground service
         Intent intent = new Intent(this, MLForegroundService.class);
         intent.putExtra("allImageFolders", selectedFolders);
         startService(intent);
@@ -142,19 +157,16 @@ public class ScanActivity extends AppCompatActivity {
     ----------------------------------------------------------------------------------------------------------
      */
 
-    public void storeSharedPref(String[] foldersFound, boolean[] checked) {
+    //stores last scan time in shared preferences
+    public void storeSharedPref() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
 
-
-        HashSet<String> selectedFolders = new HashSet<String>();
-        for (int i = 0; i < foldersFound.length; i++) {
-            if(checked[i])
-                selectedFolders.add("'" + foldersFound[i] + "'");
-        }
+        //formats last scan time
+        SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        String lastScanTime = s.format(new Date());
 
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putStringSet("Folders", selectedFolders);
-        editor.putBoolean("Scanned", true);
+        editor.putString("LastScan", lastScanTime);
         editor.apply();
     }
 
@@ -163,12 +175,12 @@ public class ScanActivity extends AppCompatActivity {
     ----------------------------------------------------------------------------------------------------------
      */
 
+    //gets all available image folders on device
     private ArrayList<String> getImageFolders() {
         ArrayList<String> allFolders = new ArrayList<String>();
 
         String[] projection = {"DISTINCT " + MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
         String sortOrder = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC";
-
 
         try (Cursor cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, sortOrder)) {
@@ -195,38 +207,45 @@ public class ScanActivity extends AppCompatActivity {
      */
 
     public void permissionHandle() {
+        //if permission granted proceed
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
-            // You can use the API that requires the permission.
-            Toast.makeText(this, "permission granted", Toast.LENGTH_LONG).show();
-            buildSelector();
 
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            //builds folder selector
+            buildFolderSelector();
+
+        }
+        //if permission not granted check if app should show rationale dialog
+        else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // In an educational UI, explain to the user why your app requires this
             // permission for a specific feature to behave as expected. In this UI,
             // include a "cancel" or "no thanks" button that allows the user to
             // continue using your app without granting the permission.
             Toast.makeText(this, "rationale", Toast.LENGTH_LONG).show();
 
-        } else {
+        }
+        //request permission for reading external storage
+        else {
             String[] premissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(premissions, 420);
         }
     }
 
+    //handles result of permission request
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
             case 420:
-                // If request is cancelled, the result arrays are empty.
+                // If request is cancelled, the result arrays are empty
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission is granted. Continue the action or workflow
-                    // in your app.
-                    Toast.makeText(this, "111", Toast.LENGTH_LONG).show();
-                    buildSelector();
-                } else {
+
+                    // If permission is granted build the folder selector
+                    buildFolderSelector();
+                }
+                // If permission is not granted build the dialog that explains why its necessary
+                else {
                     // Explain to the user that the feature is unavailable because
                     // the features requires a permission that the user has denied.
                     // At the same time, respect the user's decision. Don't link to
@@ -234,7 +253,6 @@ public class ScanActivity extends AppCompatActivity {
                     // their decision.
                     Toast.makeText(this, "222", Toast.LENGTH_LONG).show();
                 }
-                return;
         }
     }
 

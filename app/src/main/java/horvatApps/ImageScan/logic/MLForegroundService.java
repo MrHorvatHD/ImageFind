@@ -35,24 +35,25 @@ import static horvatApps.ImageScan.db.models.Mapper.imageDetailToImageEntity;
 
 public class MLForegroundService extends Service {
 
+    //global instances of notifications
     private NotificationCompat.Builder builder;
     private NotificationManager notificationManager;
 
-    private Context context;
+    //global arrays for image processing
     private ArrayList<String> allImageFolders;
     private ArrayList<ImageDetail> allImagesSelectedForML;
     ImageRepository imageRepository;
 
-
+    //creates an notification channel
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
     }
 
+    //proceses the starting intent and runs the main logic
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        context = getApplicationContext();
 
         this.allImageFolders = intent.getStringArrayListExtra("allImageFolders");
         this.imageRepository = new ImageRepository(getApplication());
@@ -74,25 +75,22 @@ public class MLForegroundService extends Service {
     ----------------------------------------------------------------------------------------------------------
      */
 
+    /* Gets all images for processsing
+    *  Starts the notification
+    *  Starts image procesing one by one
+    * */
     private void run(){
         allImagesSelectedForML = getImageList();
 
         builder = new NotificationCompat.Builder(this, "ProgressNotification");
         startForeground(69, createNotification());
 
-        /*int i = 1;
-        for(ImageDetail imageForML : allImagesSelectedForML){
-            System.out.println("a:" + i);
-            i++;
-            runTextRecognitionOnImage(imageForML,i);
-        }*/
-
         for (int i = 0; i < allImagesSelectedForML.size(); i++) {
             runTextRecognitionOnImage(allImagesSelectedForML.get(i),i+1);
         }
     }
 
-
+    //main Optical Character Recognition logic
     private void runTextRecognitionOnImage(final ImageDetail imageDetailObject, final int progress) {
         InputImage image = null;
         try {
@@ -103,11 +101,14 @@ public class MLForegroundService extends Service {
             recognizer.process(image)
                     .addOnSuccessListener(
                             new OnSuccessListener<Text>() {
+                                //on succesful image processing update the notification and store the data in db
                                 @Override
                                 public void onSuccess(Text texts) {
                                     imageDetailObject.setImageText(texts.getText().toLowerCase());
                                     updateNotification(progress);
                                     storeToDB(imageDetailObject);
+
+                                    //lauch function to stop service if processing done
                                     stopServiceWhenDone(progress);
                                 }
                             })
@@ -125,10 +126,12 @@ public class MLForegroundService extends Service {
 
     }
 
+    //stores the processed data to database
     private void storeToDB(ImageDetail imageDetail){
         imageRepository.insertImage(imageDetailToImageEntity(imageDetail));
     }
 
+    //stops service if processing done
     private void stopServiceWhenDone(int progress){
         if(progress == allImagesSelectedForML.size())
             stopSelf();
@@ -139,16 +142,21 @@ public class MLForegroundService extends Service {
     ----------------------------------------------------------------------------------------------------------
      */
 
+    //fetches all images to process
     private ArrayList<ImageDetail> getImageList() {
         ArrayList<ImageDetail> imageDetail = new ArrayList<ImageDetail>();
 
+        //sql select
         String[] projection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
+        //sql where arguments
         String selectionArgs = allImageFolders.toString();
         selectionArgs = selectionArgs.replace("[","(").replace("]",")");
 
+        //sql where
         String selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " IN " + selectionArgs;
 
+        //select order by
         String sortOrder = MediaStore.Images.Media.DISPLAY_NAME + " ASC";
 
 
@@ -170,7 +178,6 @@ public class MLForegroundService extends Service {
                 System.out.println(bucket);
 
                 Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
 
                 // Stores column values and the contentUri in a local object
                 // that represents the media file.
@@ -206,6 +213,7 @@ public class MLForegroundService extends Service {
         }
     }
 
+    //creates notification that displays the progress of the scan
     private Notification createNotification() {
         builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -219,6 +227,7 @@ public class MLForegroundService extends Service {
         return builder.build();
     }
 
+    //updates the progress bar and text
     public void updateNotification(int progress){
         builder.setProgress(allImagesSelectedForML.size(),progress,false);
         String content = String.format("%s: %d / %d",getString(R.string.notificationContentText), progress, allImagesSelectedForML.size());

@@ -4,6 +4,8 @@ import android.net.Uri;
 
 public class Mapper {
 
+    //maps objects from ImageEntitiyDB to imageDetail and vice versa
+
     public static ImageDetail imageEntityToImageDetail(ImageEntityDB imageEntityDB){
         ImageDetail imageDetail = new ImageDetail(Uri.parse(imageEntityDB.getUri()), imageEntityDB.getThumb(), imageEntityDB.getName());
         imageDetail.setImageText(imageEntityDB.getImageText());

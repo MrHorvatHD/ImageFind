@@ -17,7 +17,7 @@ public abstract class Database extends RoomDatabase {
     // add a DAO reference
     public abstract ImageDAO imageDAO();
 
-
+    //initialisation of room database
     private static volatile Database INSTANCE;
 
     public static Database getDatabase(final Context context) {
@@ -34,6 +34,7 @@ public abstract class Database extends RoomDatabase {
         return INSTANCE;
     }
 
+    //initialisation of database executors for async queryies
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 }

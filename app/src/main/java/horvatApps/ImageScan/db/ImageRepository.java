@@ -17,6 +17,7 @@ public class ImageRepository {
     private LiveData<List<ImageEntityDB>> allImages;
     private MutableLiveData<List<ImageEntityDB>> searchedImages = new MutableLiveData<>();
 
+    //initialisation of the repository
     public ImageRepository(Application application){
         Database db;
         db = Database.getDatabase(application);
@@ -26,17 +27,16 @@ public class ImageRepository {
 
     // inserts images to database
     public void insertImage(final ImageEntityDB image) {
-        // run query to insert a product on the executor
+        // run query to insert an image on the executor
         Database.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                //System.out.println("tuki smo");
                 imageDAO.insertImage(image);
             }
         });
     }
 
-    // retrieves recipe from database
+    // retrieves images from database if their scaned text contains param
     public void searchImage(final String param) {
 
         // run query on the executor, postValue to searchResults
@@ -48,7 +48,9 @@ public class ImageRepository {
         });
     }
 
+    //deletes all images from database if their uri is in arraylist params
     public void deleteImages(final ArrayList<String> params){
+        // run query to delete images on the executor
         Database.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
