@@ -2,6 +2,7 @@ package horvatApps.ImageScan.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -15,13 +16,16 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -36,11 +40,15 @@ import horvatApps.ImageScan.db.models.ImageDetail;
 import horvatApps.ImageScan.db.models.ImageEntityDB;
 import horvatApps.ImageScan.db.models.Mapper;
 
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+import static android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerViewAdapter recyclerViewAdapter;
 
-    private ArrayList<String> imageFolders;
     private ArrayList<ImageDetail> imagesFromDB = new ArrayList<ImageDetail>();
 
     private MainViewModel mainViewModel;
@@ -51,16 +59,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        darkModeHandle();
+
         initUiElements();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         observerSetup();
 
     }
 
-    //checks if any scans were already performed
+    private void darkModeHandle(){
+        //sets night mode to folow system settings on android pie and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+        //matches navigation bar with background
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.mainBackground));
+    }
+
+    //checks if any scans were already performed and handle dark mode
     @Override
     protected void onResume() {
         super.onResume();
+
+        darkModeHandle();
+
         handleSharedPref();
     }
 

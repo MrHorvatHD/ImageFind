@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/mainBackground"
     tools:context=".ui.ScanActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -20,8 +21,7 @@
             android:id="@+id/toolbar2"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="?attr/colorPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -31,13 +31,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="70dp"
+        android:background="@drawable/button"
         android:onClick="newScan"
         android:text="@string/scanButton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        android:background="@drawable/button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
 
         />
 
@@ -48,6 +48,7 @@
         android:layout_marginStart="36dp"
         android:layout_marginBottom="6dp"
         android:text="@string/lastScanNever"
+        android:textColor="@color/mainText"
         android:textSize="10sp"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintStart_toStartOf="parent" />
@@ -59,7 +60,9 @@
         android:layout_marginStart="177dp"
         android:layout_marginEnd="175dp"
         android:layout_marginBottom="571dp"
+        android:drawableTint="#00BCD4"
         android:text="TextView"
+        android:textColor="@color/mainText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

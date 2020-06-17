@@ -33,12 +33,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     class GridViewHolder extends RecyclerView.ViewHolder {
         public ImageView itemImage;
-        public TextView itemName;
 
         public GridViewHolder(View itemView) {
             super(itemView);
             itemImage = itemView.findViewById(R.id.image_view);
-            itemName = itemView.findViewById(R.id.text_view_content);
         }
     }
 
@@ -55,16 +53,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         Glide.with(context)
                 .load(recyclerList.get(position).getThumb())
-                .apply(new RequestOptions().centerCrop().override(512, 512))
+                .apply(new RequestOptions().centerCrop().override(256, 256))
                 .into(gridViewHolder.itemImage);
-
-        String imgName = recyclerList.get(position).getName();
-        if (imgName.length() > 16)
-            imgName = imgName.substring(0, 16).concat("...");
-
-        gridViewHolder.itemName.setText(imgName);
-        //gridViewHolder.itemName.setText(recyclerList.get(position).getImageText());
-
 
         gridViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

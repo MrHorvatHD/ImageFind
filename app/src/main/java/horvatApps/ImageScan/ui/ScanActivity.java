@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
@@ -37,8 +39,34 @@ public class ScanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
 
-        initUiElements();
+        darkModeHandle();
 
+        initUiElements();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        darkModeHandle();
+    }
+
+     /*
+    UI
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+    private void darkModeHandle(){
+        //sets night mode to folow system settings on android pie and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+        //matches navigation bar with background
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.mainBackground));
     }
 
     //initialises UI elements
@@ -78,7 +106,7 @@ public class ScanActivity extends AppCompatActivity {
         final boolean[] checkedItems = new boolean[foldersFound.length];
 
         //builds the selector
-        AlertDialog.Builder folderSelectorBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder folderSelectorBuilder = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
         folderSelectorBuilder.setTitle(R.string.scanDialogTitle);
         folderSelectorBuilder.setMultiChoiceItems(foldersFound, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override

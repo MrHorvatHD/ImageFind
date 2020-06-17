@@ -6,33 +6,24 @@
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        app:cardCornerRadius="4sp"
-        app:cardElevation="2dp"
-        android:layout_centerHorizontal="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:cardBackgroundColor="#00FFFFFF"
+        app:cardCornerRadius="4sp"
+        app:cardElevation="2dp">
 
         <RelativeLayout
-            android:padding="5sp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="5sp">
 
             <ImageView
                 android:id="@+id/image_view"
-                android:src="@mipmap/ic_launcher"
                 android:layout_width="match_parent"
-                android:scaleType="center"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/text_view_content"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/image_view"
-                android:layout_marginTop="10sp"
-                android:text="Content"
-                android:textColor="#000"
-                android:textSize="14sp" />
+                android:scaleType="center"
+                android:src="@mipmap/ic_launcher" />
 
 
         </RelativeLayout>
