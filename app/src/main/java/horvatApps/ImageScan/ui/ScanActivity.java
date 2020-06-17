@@ -1,6 +1,7 @@
 package horvatApps.ImageScan.ui;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,7 +59,7 @@ public class ScanActivity extends AppCompatActivity {
     FOLDER SELECTOR
     ----------------------------------------------------------------------------------------------------------
      */
-
+    private AlertDialog dialogA;
     public void buildSelector() {
 
         allImageFolders = getImageFolders();
@@ -74,7 +75,7 @@ public class ScanActivity extends AppCompatActivity {
         folderSelectorBuilder.setMultiChoiceItems(foldersFound, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-
+                dissablePositiveButton(checkedItems);
             }
         });
         folderSelectorBuilder.setPositiveButton(R.string.scanDialogConfirm, new DialogInterface.OnClickListener() {
@@ -90,10 +91,36 @@ public class ScanActivity extends AppCompatActivity {
 
             }
         });
-        folderSelectorBuilder.show();
+        dialogA = folderSelectorBuilder.create();
+
+        dialogA.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                //if(condition)
+                    ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            }
+        });
+        dialogA.show();
 
 
     }
+
+
+    public void dissablePositiveButton(boolean[] checkedItems){
+
+        if(allFalse(checkedItems))
+            dialogA.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        else
+            dialogA.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+    }
+
+    public boolean allFalse(boolean[] checked){
+        for(boolean bool : checked)
+            if(bool) return false;
+
+        return true;
+    }
+
 
     public void testService(String[] foldersFound, boolean[] checked){
         ArrayList<String> selectedFolders = new ArrayList<String>();

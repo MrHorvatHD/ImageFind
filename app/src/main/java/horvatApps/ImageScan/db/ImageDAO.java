@@ -22,4 +22,7 @@ public interface ImageDAO {
 
     @Query("SELECT * FROM images WHERE imageText LIKE '%' || :param || '%'")
     List<ImageEntityDB> searchImages(String param);
+
+    @Query("DELETE FROM images WHERE uri in (:uri)")
+    void deleteImages(ArrayList<String> uri);
 }

@@ -26,7 +26,6 @@ import com.google.mlkit.vision.text.TextRecognizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import horvatApps.ImageScan.R;
 import horvatApps.ImageScan.db.ImageRepository;
@@ -214,7 +213,7 @@ public class MLForegroundService extends Service {
                 .setProgress(100,0,false)
                 .setContentTitle(getString(R.string.notificationContentTitle));
 
-        String content = String.format("%s: %d/%d",getString(R.string.notificationContentText),0,allImagesSelectedForML.size());
+        String content = String.format("%s: %d / %d",getString(R.string.notificationContentText), 0, allImagesSelectedForML.size());
         builder.setContentText(content);
 
         return builder.build();
@@ -222,7 +221,7 @@ public class MLForegroundService extends Service {
 
     public void updateNotification(int progress){
         builder.setProgress(allImagesSelectedForML.size(),progress,false);
-        String content = String.format("%s: %d/%d",getString(R.string.notificationContentText),progress,allImagesSelectedForML.size());
+        String content = String.format("%s: %d / %d",getString(R.string.notificationContentText), progress, allImagesSelectedForML.size());
         builder.setContentText(content);
         notificationManager.notify(69,builder.build());
     }

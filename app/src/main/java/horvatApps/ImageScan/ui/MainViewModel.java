@@ -41,4 +41,7 @@ public class MainViewModel extends AndroidViewModel {
     public void searchImage(String param){
         imageRepository.searchImage(param);
     }
+    public void deleteImages(ArrayList<String> params){
+        imageRepository.deleteImages(params);
+    }
 }

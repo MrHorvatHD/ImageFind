@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                             imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
                         }
 
+                        clearGoneImages();
                         recyclerViewAdapter.notifyDataSetChanged();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -193,56 +194,44 @@ public class MainActivity extends AppCompatActivity {
     ----------------------------------------------------------------------------------------------------------
      */
 
-    private void readImages() {
-        imageList = getImageList();
-        searchedImages = new ArrayList<ImageDetail>(imageList);
-        recyclerViewAdapter = new RecyclerViewAdapter(this, imagesFromDB);
-        recyclerView.setAdapter(recyclerViewAdapter);
+    private void clearGoneImages() {
+        ArrayList<String> allImageUris = getAllImageUrisOnDevice();
+        ArrayList<String> imagesToDelete = new ArrayList<String>();
+
+        for(ImageDetail imageDetail : imagesFromDB){
+            if(!allImageUris.contains(imageDetail.getUri().toString()))
+                imagesToDelete.add(imageDetail.getUri().toString());
+        }
+
+        if(imagesToDelete.size() > 0)
+            mainViewModel.deleteImages(imagesToDelete);
     }
 
-    private ArrayList<ImageDetail> getImageList() {
-        ArrayList<ImageDetail> imageDetail = new ArrayList<ImageDetail>();
+    private ArrayList<String> getAllImageUrisOnDevice() {
+        ArrayList<String> imageUris = new ArrayList<String>();
 
-        String[] projection = {MediaStore.Images.ImageColumns._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-
-        String selectionArgs = imageFolders.toString();
-        selectionArgs = selectionArgs.replace("[", "(").replace("]", ")");
-
-        String selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " IN " + selectionArgs;
-
-        String sortOrder = MediaStore.Images.Media.DISPLAY_NAME + " ASC";
+        String[] projection = {MediaStore.Images.ImageColumns._ID};
 
 
         try (Cursor cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                projection, selection, null, sortOrder)) {
+                projection, null, null, null)) {
 
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-            int nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
-            int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            int bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
             while (cursor.moveToNext()) {
                 // Get values of columns for a given image.
                 long id = cursor.getLong(idColumn);
-                String name = cursor.getString(nameColumn);
-                String thumb = cursor.getString(dataColumn);
-                String bucket = cursor.getString(bucketColumn);
-
-                System.out.println(bucket);
 
                 Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-
-                // Stores column values and the contentUri in a local object
-                // that represents the media file.
-                imageDetail.add(new ImageDetail(contentUri, thumb, name));
+                imageUris.add(contentUri.toString());
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return imageDetail;
+        return imageUris;
     }
 
     /*
@@ -262,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
             imageFolders = new ArrayList<String>(sharedPref.getStringSet("Folders", new HashSet<String>()));
 
-            readImages();
+            //readImages();
         }
     }
 
