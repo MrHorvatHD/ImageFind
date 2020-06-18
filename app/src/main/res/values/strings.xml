@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ImageScan</string>
+    <string name="app_name">ImageFind</string>
 
     <string name="scanDialogTitle">Folders to scan</string>
     <string name="scanDialogConfirm">Scan</string>
