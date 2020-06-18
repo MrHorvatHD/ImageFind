@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="horvatApps.ImageFind.ui.MainActivity">
+        <activity android:name="horvatApps.ImageFind.ui.MainActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

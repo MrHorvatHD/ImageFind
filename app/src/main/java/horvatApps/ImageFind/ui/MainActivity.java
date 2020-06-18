@@ -47,7 +47,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     //initialises the viewModel, UI elements and observers for live data
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         darkModeHandle();
