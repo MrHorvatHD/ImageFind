@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">ImageFind</string>
+
+    <string name="scanDialogTitle">Folders to scan</string>
+    <string name="scanDialogConfirm">Scan</string>
+    <string name="scanDialogCancel">Cancel</string>
+
+    <string name="scanButton">New Scan</string>
+    <string name="deleteAllButton">Delete all scans</string>
+
+    <string name="inputFieldHint">Search…</string>
+
+    <string name="dropdownScan">Scan</string>
+    <string name="dropdownAbout">About</string>
+    <string name="dropdownSettings">Settings</string>
+
+    <string name="notificationChannelName">ImageScanNotification</string>
+    <string name="notificationChannelDescription">Notification that visualises progress of image scan</string>
+    <string name="notificationContentText">Processed</string>
+    <string name="notificationContentTitle">Scan in progress</string>
+
+    <string name="lastScanNever">Last scan: Never</string>
+    <string name="lastScan">Last scan: </string>
+
+</resources>
