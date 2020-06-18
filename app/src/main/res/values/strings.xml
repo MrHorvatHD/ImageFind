@@ -27,7 +27,13 @@
     select the folders from which the images will be scaned.\n\nRescanning the same folder again will find new images and update older ones, if changes have been made to them.\n\nScan time depends on the devices CPU and the number of selected images, it could take a while.
     </string>
 
-    <string name="permissionRationale">Rationale </string>
-    <string name="permissionDeniedExplanation">Explanation </string>
+    <string name="permissionRationale">To process new images, the app needs access to device storage! </string>
+    <string name="permissionRationaleTitle">Request storage permission</string>
+    <string name="permissionAllow">Allow</string>
+    <string name="permissionDeny">Deny</string>
+
+    <string name="permissionDeniedExplanation">To process new images the app needs access to device storage! Without it scanning new images won\'t work. </string>
+    <string name="permissionDeniedTitle">Storage permission denied</string>
+    <string name="permissionDeniedAcknowledge">Acknowledge</string>
 
 </resources>

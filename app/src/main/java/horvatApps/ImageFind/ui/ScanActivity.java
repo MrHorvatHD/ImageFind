@@ -234,6 +234,50 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     /*
+    RATIONALE DIALOG
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+    //displays rationale if storage permission not granted
+    public void buildRationale(){
+        AlertDialog.Builder rationaleDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
+        rationaleDialog.setTitle(R.string.permissionRationaleTitle);
+        rationaleDialog.setMessage(getString(R.string.permissionRationale));
+
+        rationaleDialog.setPositiveButton(R.string.permissionAllow, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String[] premissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                requestPermissions(premissions, 420);
+            }
+        });
+        rationaleDialog.setNegativeButton(R.string.permissionDeny, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        rationaleDialog.show();
+    }
+
+    //displays alert if storage permission not granted and set to "don't ask again"
+    public void buildDeniedDialog(){
+        AlertDialog.Builder deniedDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
+        deniedDialog.setTitle(R.string.permissionDeniedTitle);
+        deniedDialog.setMessage(getString(R.string.permissionDeniedExplanation));
+
+        deniedDialog.setPositiveButton(R.string.permissionDeniedAcknowledge, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        deniedDialog.show();
+    }
+
+
+
+    /*
     PERMISSIONS
     ----------------------------------------------------------------------------------------------------------
      */
@@ -253,7 +297,7 @@ public class ScanActivity extends AppCompatActivity {
             // permission for a specific feature to behave as expected. In this UI,
             // include a "cancel" or "no thanks" button that allows the user to
             // continue using your app without granting the permission.
-            Toast.makeText(this, "rationale", Toast.LENGTH_LONG).show();
+            buildRationale();
 
         }
         //request permission for reading external storage
@@ -283,7 +327,7 @@ public class ScanActivity extends AppCompatActivity {
                     // At the same time, respect the user's decision. Don't link to
                     // system settings in an effort to convince the user to change
                     // their decision.
-                    Toast.makeText(this, "222", Toast.LENGTH_LONG).show();
+                    buildDeniedDialog();
                 }
         }
     }
