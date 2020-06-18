@@ -62,7 +62,12 @@ public class MLForegroundService extends Service {
         this.allImageFolders = intent.getStringArrayListExtra("allImageFolders");
         this.imageRepository = new ImageRepository(getApplication());
 
-        run();
+        //start a new thread for OCR
+        new Thread(new Runnable() {
+            public void run() {
+                runMain();
+            }
+        }).start();
 
         return START_REDELIVER_INTENT;
     }
@@ -83,7 +88,7 @@ public class MLForegroundService extends Service {
     *  Starts the notification
     *  Starts image procesing one by one
     * */
-    private void run(){
+    private void runMain(){
         allImagesSelectedForML = getImageList();
 
         builder = new NotificationCompat.Builder(this, "ProgressNotification");
