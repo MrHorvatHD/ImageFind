@@ -22,4 +22,12 @@
     <string name="lastScanNever">Last scan: Never</string>
     <string name="lastScan">Last scan: </string>
 
+    <string name="scanInstructions"><b>ImageFind</b> lets you search the text in your images. Before you can do that,
+        the app need to process the images.\nTo do so, click the <b>\"New Scan\"</b> button and in the multiple choice menu
+    select the folders from which the images will be scaned.\n\nRescanning the same folder again will find new images and update older ones, if changes have been made to them.\n\nScan time depends on the devices CPU and the number of selected images, it could take a while.
+    </string>
+
+    <string name="permissionRationale">Rationale </string>
+    <string name="permissionDeniedExplanation">Explanation </string>
+
 </resources>
