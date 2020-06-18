@@ -59,6 +59,17 @@ public class ImageRepository {
         });
     }
 
+    //deletes all images from database
+    public void deleteALLImages(){
+        // run query to delete images on the executor
+        Database.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                imageDAO.deleteALLImages();
+            }
+        });
+    }
+
     public LiveData<List<ImageEntityDB>> getAllImages() {
         return allImages;
     }

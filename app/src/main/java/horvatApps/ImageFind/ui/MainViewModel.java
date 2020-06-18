@@ -38,6 +38,8 @@ public class MainViewModel extends AndroidViewModel {
         imageRepository.insertImage(imageEntityDB);
     }
 
+    public void deleteALLImages(){imageRepository.deleteALLImages();}
+
     public void searchImage(String param){
         imageRepository.searchImage(param);
     }

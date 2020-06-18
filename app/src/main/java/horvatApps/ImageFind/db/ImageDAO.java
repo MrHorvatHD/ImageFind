@@ -25,4 +25,7 @@ public interface ImageDAO {
 
     @Query("DELETE FROM images WHERE uri in (:uri)")
     void deleteImages(ArrayList<String> uri);
+
+    @Query("DELETE FROM images")
+    void deleteALLImages();
 }

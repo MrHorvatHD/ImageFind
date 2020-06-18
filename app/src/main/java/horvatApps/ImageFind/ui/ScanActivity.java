@@ -9,6 +9,9 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +36,8 @@ import horvatApps.ImageFind.logic.MLForegroundService;
 
 public class ScanActivity extends AppCompatActivity {
 
+    TextView lastScanTime;
+
     //builds the view for the activity and initialises UI element
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,12 +61,11 @@ public class ScanActivity extends AppCompatActivity {
     ----------------------------------------------------------------------------------------------------------
      */
 
-    private void darkModeHandle(){
+    private void darkModeHandle() {
         //sets night mode to folow system settings on android pie and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
-        else {
+        } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
@@ -76,7 +80,7 @@ public class ScanActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
-        TextView lastScanTime = findViewById(R.id.lastScanText);
+        lastScanTime = findViewById(R.id.lastScanText);
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         lastScanTime.setText(String.format("%s %s", getString(R.string.lastScan), sharedPref.getString("LastScan", "never")));
     }
@@ -87,9 +91,74 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     /*
+    HANDLING OPTIONS MENU CREATION
+    ----------------------------------------------------------------------------------------------------------
+    */
+
+    //only displays the menu if scan was already performed
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_menu2, menu);
+
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
+        String lastScanTime = sharedPref.getString("LastScan", "never");
+
+        return !lastScanTime.equals("never");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.dropdown_menu_clear:
+                deleteALLImagesAlert();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //starts the delete process and updates shared preferences
+    public void handleDelete(){
+        MainViewModel mainViewModel = new MainViewModel(getApplication());
+        mainViewModel.deleteALLImages();
+
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
+
+        //updates shared preferences
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("LastScan", "never");
+        editor.apply();
+
+        //updates UI
+        lastScanTime.setText(getString(R.string.lastScanNever));
+        invalidateOptionsMenu();
+    }
+
+    //dialog to comfirm clearing of all images from database
+    public void deleteALLImagesAlert(){
+        AlertDialog.Builder deleteALLImagesDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
+        deleteALLImagesDialog.setTitle(R.string.clearCacheTitle);
+        deleteALLImagesDialog.setMessage(getString(R.string.clearCacheText));
+
+        deleteALLImagesDialog.setPositiveButton(R.string.clearCacheConfirm, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               handleDelete();
+            }
+        });
+        deleteALLImagesDialog.setNegativeButton(R.string.clearCacheDeny, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        deleteALLImagesDialog.show();
+    }
+
+    /*
     FOLDER SELECTOR
     ----------------------------------------------------------------------------------------------------------
-     */
+    */
+
     //builds the folder selector
     private AlertDialog dialogA;
 
@@ -195,11 +264,15 @@ public class ScanActivity extends AppCompatActivity {
 
         //formats last scan time
         SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        String lastScanTime = s.format(new Date());
+        String lastScanTimeText = s.format(new Date());
 
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("LastScan", lastScanTime);
+        editor.putString("LastScan", lastScanTimeText);
         editor.apply();
+
+        //update UI
+        lastScanTime.setText(String.format("%s %s", getString(R.string.lastScan), lastScanTimeText));
+        invalidateOptionsMenu();
     }
 
     /*
@@ -239,7 +312,7 @@ public class ScanActivity extends AppCompatActivity {
      */
 
     //displays rationale if storage permission not granted
-    public void buildRationale(){
+    public void buildRationale() {
         AlertDialog.Builder rationaleDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
         rationaleDialog.setTitle(R.string.permissionRationaleTitle);
         rationaleDialog.setMessage(getString(R.string.permissionRationale));
@@ -261,7 +334,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     //displays alert if storage permission not granted and set to "don't ask again"
-    public void buildDeniedDialog(){
+    public void buildDeniedDialog() {
         AlertDialog.Builder deniedDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
         deniedDialog.setTitle(R.string.permissionDeniedTitle);
         deniedDialog.setMessage(getString(R.string.permissionDeniedExplanation));
