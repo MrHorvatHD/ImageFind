@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 
@@ -140,7 +141,10 @@ public class MLForegroundService extends Service {
     //stops service if processing done
     private void stopServiceWhenDone(int progress){
         if(progress == allImagesSelectedForML.size())
-            stopSelf();
+            new Handler().postDelayed(() -> {
+                stopSelf();
+            }, 2000);
+
     }
 
     /*
