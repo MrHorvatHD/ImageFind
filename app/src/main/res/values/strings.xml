@@ -51,6 +51,8 @@
     <string name="toolbarScan">Scan Images</string>
     <string name="toolbarAbout">About ImageFind</string>
 
+    <string name="imageDescription">Scanned image</string>
+
 
 
 

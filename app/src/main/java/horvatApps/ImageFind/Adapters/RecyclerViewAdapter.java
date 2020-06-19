@@ -50,7 +50,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         Glide.with(context)
                 .load(recyclerList.get(position).getThumb())
-                .apply(new RequestOptions())
+                .apply(new RequestOptions().override(300, 300))
                 .into(gridViewHolder.itemImage);
 
         gridViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
