@@ -48,6 +48,10 @@
     <string name="permissionDeniedTitle">Storage permission denied</string>
     <string name="permissionDeniedAcknowledge">Acknowledge</string>
 
+    <string name="toolbarScan">Scan Images</string>
+    <string name="toolbarAbout">About ImageFind</string>
+
+
 
 
 </resources>

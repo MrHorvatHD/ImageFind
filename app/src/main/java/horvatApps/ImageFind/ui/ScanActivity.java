@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,14 +76,21 @@ public class ScanActivity extends AppCompatActivity {
 
     //initialises UI elements
     public void initUiElements() {
+        //setup the toolbar
         AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout2);
         Toolbar toolbar = findViewById(R.id.toolbar2);
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle(R.string.toolbarScan);
         setSupportActionBar(toolbar);
 
         lastScanTime = findViewById(R.id.lastScanText);
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         lastScanTime.setText(String.format("%s %s", getString(R.string.lastScan), sharedPref.getString("LastScan", "never")));
+
+        //only displays back arrow if scan was already performed
+        if (getSupportActionBar() != null && !sharedPref.getString("LastScan", "never").equals("never")) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 
     //handle click on new scan button
@@ -112,6 +120,9 @@ public class ScanActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.dropdown_menu_clear:
                 deleteALLImagesAlert();
+                break;
+            case android.R.id.home:
+                finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -130,6 +141,11 @@ public class ScanActivity extends AppCompatActivity {
 
         //updates UI
         lastScanTime.setText(getString(R.string.lastScanNever));
+        if (getSupportActionBar() != null ) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+        }
+
         invalidateOptionsMenu();
     }
 
@@ -272,7 +288,17 @@ public class ScanActivity extends AppCompatActivity {
 
         //update UI
         lastScanTime.setText(String.format("%s %s", getString(R.string.lastScan), lastScanTimeText));
-        invalidateOptionsMenu();
+
+        //handler to update UI after 2000 ms
+        new Handler().postDelayed(() -> {
+            if (getSupportActionBar() != null ) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+            }
+            invalidateOptionsMenu();
+        }, 2000);
+
+
     }
 
     /*

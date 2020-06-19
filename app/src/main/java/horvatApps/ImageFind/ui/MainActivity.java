@@ -146,10 +146,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void initUiElements() {
+        //setup the toolbar
         AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
+
 
         RecyclerView recyclerView = findViewById(R.id.recyclerImages);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
