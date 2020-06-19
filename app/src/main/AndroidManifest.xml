@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="horvatApps.ImageFind">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -13,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="horvatApps.ImageFind.ui.MainActivity"
+        <activity android:name=".ui.AboutActivity"></activity>
+        <activity
+            android:name=".ui.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,11 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="horvatApps.ImageFind.ui.ScanActivity">
+        <activity android:name=".ui.ScanActivity"></activity>
 
-        </activity>
-
-        <service android:name="horvatApps.ImageFind.logic.MLForegroundService" />
+        <service android:name=".logic.MLForegroundService" />
     </application>
 
 </manifest>

@@ -141,10 +141,7 @@ public class MLForegroundService extends Service {
     //stops service if processing done
     private void stopServiceWhenDone(int progress){
         if(progress == allImagesSelectedForML.size())
-            new Handler().postDelayed(() -> {
-                stopSelf();
-            }, 2000);
-
+            new Handler().postDelayed(this::stopSelf, 2000);
     }
 
     /*

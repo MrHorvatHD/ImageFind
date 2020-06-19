@@ -123,12 +123,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.dropdown_menu_scan:
-                Intent intent = new Intent(this, ScanActivity.class);
-                startActivity(intent);
+                Intent intentScan = new Intent(this, ScanActivity.class);
+                startActivity(intentScan);
                 return true;
 
             case R.id.dropdown_menu_about:
-                Toast.makeText(this, "About", Toast.LENGTH_LONG).show();
+                Intent intentAbout = new Intent(this, AboutActivity.class);
+                startActivity(intentAbout);
                 return true;
 
             /*case R.id.dropdown_menu_settings:
