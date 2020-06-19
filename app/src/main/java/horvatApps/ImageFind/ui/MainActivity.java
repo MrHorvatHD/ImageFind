@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         initUiElements();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        observerSetup();
-
     }
 
     private void darkModeHandle(){
@@ -77,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        observerSetup();
 
         darkModeHandle();
 
@@ -131,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "About", Toast.LENGTH_LONG).show();
                 return true;
 
-            case R.id.dropdown_menu_settings:
+            /*case R.id.dropdown_menu_settings:
                 Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
-                return true;
+                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }
