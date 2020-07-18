@@ -43,9 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ImageDetail> imagesFromDB = new ArrayList<ImageDetail>();
 
     private MainViewModel mainViewModel;
+    private boolean redirected = false;
 
     @Override
-    //initialises the viewModel, UI elements and observers for live data
+    //initialises the viewModel, UI elements and checks if any scans were already performed
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
         initUiElements();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
+        handleSharedPref();
     }
 
     private void darkModeHandle(){
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.mainBackground));
     }
 
-    //checks if any scans were already performed and handle dark mode
+    //handle dark mode and observers
     @Override
     protected void onResume() {
         super.onResume();
@@ -79,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         observerSetup();
 
         darkModeHandle();
-
-        handleSharedPref();
     }
 
     /*
@@ -279,8 +280,10 @@ public class MainActivity extends AppCompatActivity {
 
         //checks shared prefferences for the date of last scan
         assert lastScanTime != null;
-        if (lastScanTime.equals("never")) {
-            //if scan not preformed yet redirect to scan activity
+        if (lastScanTime.equals("never") && !redirected) {
+            redirected = true;
+
+            //if scan not preformed yet and redirect hasn't happened yet, redirect to scan activity
             Intent intent = new Intent(this, ScanActivity.class);
             startActivity(intent);
         }
