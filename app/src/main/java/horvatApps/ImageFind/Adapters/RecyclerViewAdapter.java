@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 import horvatApps.ImageFind.R;
 import horvatApps.ImageFind.db.models.ImageDetail;
+import horvatApps.ImageFind.logic.MLForegroundService;
+import horvatApps.ImageFind.ui.ShareIntentActivity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.GridViewHolder> {
     private ArrayList<ImageDetail> recyclerList;
@@ -65,6 +67,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 // Toast.makeText(context, "aaaa", Toast.LENGTH_LONG).show();
             }
         });
+
+        gridViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(context, ShareIntentActivity.class);
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, recyclerList.get(position).getUri());
+                intent.setType("image/*");
+                context.startActivity(intent);
+
+                return true;
+            }
+        });
+
+        /**/
     }
 
     @Override
