@@ -12,7 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.AboutActivity"></activity>
+        <activity android:name=".ui.ShareIntentActivity">
+            <intent-filter android:label="@string/intent_label"
+                android:icon="@drawable/ic_launcher_circle"
+                android:priority="100">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.AboutActivity" />
         <activity
             android:name=".ui.MainActivity"
             android:theme="@style/SplashTheme">
@@ -22,7 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ScanActivity"></activity>
+        <activity android:name=".ui.ScanActivity" />
 
         <service android:name=".logic.MLForegroundService" />
     </application>
