@@ -44,6 +44,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:adjustViewBounds="true"
                 app:srcCompat="@drawable/about_image" />
 
             <TextView
@@ -65,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="512dp"
+                android:layout_marginBottom="256dp"
                 android:text="@string/OcrTextContent"
                 android:textColor="@color/mainText"
                 android:textIsSelectable="true"

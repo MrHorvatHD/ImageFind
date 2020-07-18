@@ -1,5 +1,6 @@
 package horvatApps.ImageFind.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -11,10 +12,20 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+
+import java.io.IOException;
 
 import horvatApps.ImageFind.R;
+import horvatApps.ImageFind.db.models.ImageDetail;
 
 public class ShareIntentActivity extends AppCompatActivity {
 
@@ -55,6 +66,7 @@ public class ShareIntentActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.mainBackground));
     }
 
+    // sets the image from intent and starts the text recognition process
     public void handleIntent(){
         Intent intent = getIntent();
 
@@ -62,6 +74,44 @@ public class ShareIntentActivity extends AppCompatActivity {
         if (imageUri != null) {
             ImageView image = findViewById(R.id.imageView);
             image.setImageURI(imageUri);
+
+            runTextRecognitionOnImage(imageUri);
         }
+    }
+
+    //main Optical Character Recognition logic
+    private void runTextRecognitionOnImage(Uri imageUri) {
+        InputImage image = null;
+        try {
+            image = InputImage.fromFilePath(getApplicationContext(), imageUri);
+
+            TextRecognizer recognizer = TextRecognition.getClient();
+
+            recognizer.process(image)
+                    .addOnSuccessListener(
+                            new OnSuccessListener<Text>() {
+                                //on succesful image processing update the the recognised text view and store the data to db
+                                @Override
+                                public void onSuccess(Text texts) {
+                                    //imageDetailObject.setImageText(texts.getText().toLowerCase());
+                                    //storeToDB(imageDetailObject);
+
+                                    TextView recognisedText = findViewById(R.id.OCRtextContent);
+                                    if(texts.getText().length() > 0)
+                                        recognisedText.setText(texts.getText());
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Task failed with an exception
+                                    e.printStackTrace();
+                                }
+                            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
