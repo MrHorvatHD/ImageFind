@@ -66,8 +66,9 @@
     <string name="InstFrag3Content">Acces text of scanned images by long pressing on them</string>
     <string name="InstFrag4Title">Share menu</string>
     <string name="InstFrag4Content">Acces text of any image by selecting ImageFind app from the share menu</string>
-    <string name="InstFrag5Title">frag5</string>
-    <string name="InstFrag5Content">frag5</string>
+    <string name="InstFrag5Title">All set</string>
+    <string name="InstFrag5Content">You\'re all set to start using ImageFind</string>
+    <string name="InstFrag5Button">Start</string>
 
 
 

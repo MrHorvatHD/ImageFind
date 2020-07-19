@@ -279,16 +279,19 @@ public class MainActivity extends AppCompatActivity {
     public void handleSharedPref() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         String lastScanTime = sharedPref.getString("LastScan", "never");
+        assert lastScanTime != null;
         boolean isFirst = sharedPref.getBoolean("isFirst", true);
 
-        //if the instructions guid hasn't already been shown redirect to it
-        if (isFirst)
-            startActivity(new Intent(this, InstructionsActivity.class));
-
+        //if the instructions guide hasn't already been shown redirect to it
+        if (isFirst) {
+            //starts instructions activity on a new stack
+            Intent intent = new Intent(this, InstructionsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
 
         //checks shared prefferences for the date of last scan
-        assert lastScanTime != null;
-        if (lastScanTime.equals("never") && !redirected) {
+        else if (lastScanTime.equals("never") && !redirected) {
             redirected = true;
 
             //if scan not preformed yet and redirect hasn't happened yet, redirect to scan activity

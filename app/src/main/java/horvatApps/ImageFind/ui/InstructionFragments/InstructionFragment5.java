@@ -1,5 +1,6 @@
 package horvatApps.ImageFind.ui.InstructionFragments;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -11,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import horvatApps.ImageFind.R;
+import horvatApps.ImageFind.ui.InstructionsActivity;
+import horvatApps.ImageFind.ui.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,7 +35,11 @@ public class InstructionFragment5 extends Fragment {
             @Override
             public void onClick(View v) {
                 storeSharedPref();
-                getActivity().finish();
+
+                //starts main activity on a new stack
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
 
