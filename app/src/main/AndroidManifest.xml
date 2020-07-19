@@ -12,12 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.InstructionsActivity"></activity>
         <activity android:name=".ui.ShareIntentActivity">
-            <intent-filter android:label="@string/intent_label"
+            <intent-filter
                 android:icon="@drawable/ic_launcher_circle"
+                android:label="@string/intent_label"
                 android:priority="100">
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>

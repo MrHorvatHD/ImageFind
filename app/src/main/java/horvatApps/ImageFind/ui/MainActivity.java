@@ -35,6 +35,8 @@ import horvatApps.ImageFind.R;
 import horvatApps.ImageFind.db.models.ImageDetail;
 import horvatApps.ImageFind.db.models.ImageEntityDB;
 import horvatApps.ImageFind.db.models.Mapper;
+import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment1;
+import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment2;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -277,6 +279,11 @@ public class MainActivity extends AppCompatActivity {
     public void handleSharedPref() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         String lastScanTime = sharedPref.getString("LastScan", "never");
+
+
+        //TODO
+        Intent intent2 = new Intent(this, InstructionsActivity.class);
+        startActivity(intent2);
 
         //checks shared prefferences for the date of last scan
         assert lastScanTime != null;
