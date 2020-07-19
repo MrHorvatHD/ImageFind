@@ -3,12 +3,17 @@ package horvatApps.ImageFind.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
+import android.text.Html;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
@@ -18,11 +23,11 @@ import horvatApps.ImageFind.Adapters.InstructionsPagerAdapter;
 import horvatApps.ImageFind.R;
 import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment2;
 
-public class InstructionsActivity extends FragmentActivity {
+public class InstructionsActivity extends FragmentActivity{
     /**
      * The number of pages (wizard steps) to show in this demo.
      */
-    private static final int NUM_PAGES = 2;
+    private static final int NUM_PAGES = 3;
 
     /**
      * The pager widget, which handles animation and allows swiping horizontally to access previous
@@ -35,6 +40,10 @@ public class InstructionsActivity extends FragmentActivity {
      */
     private FragmentStateAdapter pagerAdapter;
 
+    //TODO
+    private TextView[] dots;
+    private LinearLayout dotsLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +53,16 @@ public class InstructionsActivity extends FragmentActivity {
         viewPager = findViewById(R.id.view_pager2);
         pagerAdapter = new InstructionsPagerAdapter(this, NUM_PAGES);
         viewPager.setAdapter(pagerAdapter);
+
+
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {}).attach();
+
+        //TODO
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+
+
     }
 
     @Override

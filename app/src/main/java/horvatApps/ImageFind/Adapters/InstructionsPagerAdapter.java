@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment1;
 import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment2;
+import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment3;
 
 public class InstructionsPagerAdapter extends FragmentStateAdapter {
     private int num_pages;
@@ -24,6 +25,9 @@ public class InstructionsPagerAdapter extends FragmentStateAdapter {
 
             case 1:
                 return new InstructionFragment2();
+
+            case 2:
+                return new InstructionFragment3();
         }
         return null;
     }
