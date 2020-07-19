@@ -55,6 +55,7 @@
 
     <string name="imageDescription">Scanned image</string>
 
+    <string name="OcrTextToolbarTitle">Recognised text</string>
     <string name="OcrTextTitle">Recognised text:</string>
     <string name="OcrTextContent">Sorry, no text was recognised from the image!</string>
 
