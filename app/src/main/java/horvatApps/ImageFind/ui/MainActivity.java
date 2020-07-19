@@ -57,18 +57,18 @@ public class MainActivity extends AppCompatActivity {
 
         darkModeHandle();
 
+        handleSharedPref();
+
         initUiElements();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
-        handleSharedPref();
     }
 
-    private void darkModeHandle(){
+    private void darkModeHandle() {
         //sets night mode to folow system settings on android pie and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
-        else {
+        } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private SearchView searchView;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //create the toolbar menu
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     //handles clicking on icons from the toolbar menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.dropdown_menu_scan:
                 Intent intentScan = new Intent(this, ScanActivity.class);
                 startActivity(intentScan);
@@ -135,9 +136,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intentAbout);
                 return true;
 
-            /*case R.id.dropdown_menu_settings:
-                Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
-                return true;*/
+            case R.id.dropdown_menu_instructions:
+                startActivity(new Intent(this, InstructionsActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -178,12 +179,11 @@ public class MainActivity extends AppCompatActivity {
                 int queryLength = 0;
                 try {
                     queryLength = searchView.getQuery().length();
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                if( queryLength == 0)
+                if (queryLength == 0)
                     try {
                         imagesFromDB.clear();
                         for (ImageEntityDB imageEntityDB : imageEntityDBS) {
@@ -279,11 +279,12 @@ public class MainActivity extends AppCompatActivity {
     public void handleSharedPref() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         String lastScanTime = sharedPref.getString("LastScan", "never");
+        boolean isFirst = sharedPref.getBoolean("isFirst", true);
 
+        //if the instructions guid hasn't already been shown redirect to it
+        if (isFirst)
+            startActivity(new Intent(this, InstructionsActivity.class));
 
-        //TODO
-        Intent intent2 = new Intent(this, InstructionsActivity.class);
-        startActivity(intent2);
 
         //checks shared prefferences for the date of last scan
         assert lastScanTime != null;

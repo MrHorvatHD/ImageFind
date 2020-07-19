@@ -13,9 +13,9 @@
         android:title="@string/dropdownAbout"
         app:showAsAction="never"/>
 
-    <!--<item android:id="@+id/dropdown_menu_settings"
-        android:title="@string/dropdownSettings"
-        app:showAsAction="never"/>-->
+    <item android:id="@+id/dropdown_menu_instructions"
+        android:title="@string/dropdownInstructions"
+        app:showAsAction="never"/>
 
     <item android:id="@+id/toolbar_search"
         android:icon="@drawable/ic_search_white_24dp"
