@@ -7,12 +7,11 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_circle"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.InstructionsActivity"></activity>
+        <activity android:name=".ui.InstructionsActivity" />
         <activity android:name=".ui.ShareIntentActivity">
             <intent-filter
                 android:icon="@drawable/ic_launcher_circle"
