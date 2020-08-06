@@ -7,14 +7,16 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher_circle"
+        android:logo="@mipmap/ic_launcher_adaptive"
+        android:icon="@mipmap/ic_launcher_adaptive"
+        android:roundIcon="@mipmap/ic_launcher_adaptive_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.InstructionsActivity" />
         <activity android:name=".ui.ShareIntentActivity">
             <intent-filter
-                android:icon="@drawable/ic_launcher_circle"
+                android:icon="@mipmap/ic_launcher_adaptive"
                 android:label="@string/intent_label"
                 android:priority="100">
                 <action android:name="android.intent.action.SEND" />
