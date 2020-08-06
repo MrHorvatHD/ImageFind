@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/imageDescription"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@mipmap/ic_launcher_adaptive_round" />
 
     </androidx.cardview.widget.CardView>
 
