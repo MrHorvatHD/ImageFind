@@ -20,3 +20,9 @@ Searching is performed by typing in the search bar in the toolbar. Found image l
 <img src="https://github.com/MrHorvatHD/ImageFind/blob/master/img/photoUpClose.jpg" width="270" height="600"/>
 
 By clicking on the image, it's opened in the default gallery app or alternatively the user is presented with a list of adequate apps.
+
+## Accessing recognised text
+
+<img src="https://github.com/MrHorvatHD/ImageFind/blob/master/img/ImageDetail.jpg" width="270" height="600"/>
+
+By long pressing on an image, it's opened in a new activity where you can copy the text recognised from it. The same functionality can be accesed by pressing the share button on any image outside the app.
