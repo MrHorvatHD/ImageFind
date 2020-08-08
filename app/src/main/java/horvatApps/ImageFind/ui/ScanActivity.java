@@ -28,7 +28,10 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 
 import horvatApps.ImageFind.R;
@@ -116,7 +119,7 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.dropdown_menu_clear:
                 deleteALLImagesAlert();
                 break;
@@ -127,7 +130,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     //starts the delete process and updates shared preferences
-    public void handleDelete(){
+    public void handleDelete() {
         MainViewModel mainViewModel = new MainViewModel(getApplication());
         mainViewModel.deleteALLImages();
 
@@ -140,7 +143,7 @@ public class ScanActivity extends AppCompatActivity {
 
         //updates UI
         lastScanTime.setText(getString(R.string.lastScanNever));
-        if (getSupportActionBar() != null ) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
         }
@@ -149,7 +152,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     //dialog to comfirm clearing of all images from database
-    public void deleteALLImagesAlert(){
+    public void deleteALLImagesAlert() {
         AlertDialog.Builder deleteALLImagesDialog = new AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
         deleteALLImagesDialog.setTitle(R.string.clearCacheTitle);
         deleteALLImagesDialog.setMessage(getString(R.string.clearCacheText));
@@ -157,7 +160,7 @@ public class ScanActivity extends AppCompatActivity {
         deleteALLImagesDialog.setPositiveButton(R.string.clearCacheConfirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-               handleDelete();
+                handleDelete();
             }
         });
         deleteALLImagesDialog.setNegativeButton(R.string.clearCacheDeny, new DialogInterface.OnClickListener() {
@@ -290,7 +293,7 @@ public class ScanActivity extends AppCompatActivity {
 
         //handler to update UI after 2000 ms
         new Handler().postDelayed(() -> {
-            if (getSupportActionBar() != null ) {
+            if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
             }
@@ -307,6 +310,39 @@ public class ScanActivity extends AppCompatActivity {
 
     //gets all available image folders on device
     private ArrayList<String> getImageFolders() {
+        ArrayList<String> allFolders = new ArrayList<String>();
+
+        String[] projection = new String[]{MediaStore.MediaColumns.BUCKET_DISPLAY_NAME};
+
+        String sortOrder = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME + " ASC";
+
+
+        try (Cursor cursor = this.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection, null, null, sortOrder)) {
+
+            //int bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME);
+            int bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME);
+
+            //required sorting of folders because DISTINCT keyword doesn't work anymore
+            HashSet<String> allFoldersHS = new HashSet();
+            while (cursor.moveToNext()) {
+
+                String bucket = cursor.getString(bucketColumn);
+
+                allFoldersHS.add(bucket);
+            }
+
+            for (String folder : allFoldersHS)
+                allFolders.add("'" + folder + "'");
+            Collections.sort(allFolders);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return allFolders;
+    }
+    /*private ArrayList<String> getImageFolders() {
         ArrayList<String> allFolders = new ArrayList<String>();
 
         String[] projection = {"DISTINCT " + MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
@@ -329,7 +365,8 @@ public class ScanActivity extends AppCompatActivity {
         }
 
         return allFolders;
-    }
+    }*/
+
 
     /*
     RATIONALE DIALOG

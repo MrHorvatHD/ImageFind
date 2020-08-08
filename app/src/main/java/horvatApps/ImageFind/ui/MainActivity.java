@@ -82,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         observerSetup();
+        lastUpdateTime = 0;
+
+
+        recyclerViewAdapter.notifyDataSetChanged();
 
         darkModeHandle();
     }
@@ -170,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
      */
 
     //initialises observers for live data
+    long lastUpdateTime = 0;
     public void observerSetup() {
         //handle all data live updates in recycler view if not using the search bar
         mainViewModel.getAllImages().observe(this, new Observer<List<ImageEntityDB>>() {
@@ -183,7 +188,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if (queryLength == 0)
+                //updates Recycler view only ever 0.5 sec
+                if (lastUpdateTime == 0 || queryLength == 0 && System.currentTimeMillis() - lastUpdateTime >= 500)
                     try {
                         imagesFromDB.clear();
                         for (ImageEntityDB imageEntityDB : imageEntityDBS) {
@@ -194,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
                         clearGoneImages();
 
                         recyclerViewAdapter.notifyDataSetChanged();
+                        lastUpdateTime = System.currentTimeMillis();
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -279,14 +287,13 @@ public class MainActivity extends AppCompatActivity {
     public void handleSharedPref() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
         String lastScanTime = sharedPref.getString("LastScan", "never");
-        assert lastScanTime != null;
         boolean isFirst = sharedPref.getBoolean("isFirst", true);
 
         //if the instructions guide hasn't already been shown redirect to it
         if (isFirst) {
             //starts instructions activity on a new stack
             Intent intent = new Intent(this, InstructionsActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
 
