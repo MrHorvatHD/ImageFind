@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -40,9 +41,10 @@ import horvatApps.ImageFind.db.models.ImageEntityDB;
 import horvatApps.ImageFind.db.models.Mapper;
 import horvatApps.ImageFind.logic.MLForegroundService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private RecyclerViewAdapter recyclerViewAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private ArrayList<ImageDetail> imagesFromDB = new ArrayList<ImageDetail>();
 
@@ -86,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
         observerSetup();
         lastUpdateTime = 0;
 
-
         recyclerViewAdapter.notifyDataSetChanged();
 
         darkModeHandle();
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private long lastRefreshTime = 0;
     //handles clicking on icons from the toolbar menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -147,9 +149,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.dropdown_menu_refresh:
-                //if scan not in progres start refresh
-                if(!isServiceRunning(this,MLForegroundService.class))
+                //start refresh only if 10 sec from and ML service not already running
+                if(!isServiceRunning(this,MLForegroundService.class) && System.currentTimeMillis() - lastRefreshTime >= 10000) {
                     checkForNewImages();
+                    lastRefreshTime = System.currentTimeMillis();
+                }
                 else
                     Toast.makeText(this, getString(R.string.toastScanAlert), Toast.LENGTH_LONG).show();
 
@@ -171,13 +175,23 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+        //init of swipe refresh
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            if(!isServiceRunning(this,MLForegroundService.class))
+                checkForNewImages();
+            else
+                Toast.makeText(this, getString(R.string.toastScanAlert), Toast.LENGTH_LONG).show();
+
+            swipeRefreshLayout.setRefreshing(false);
+        });
+
 
         RecyclerView recyclerView = findViewById(R.id.recyclerImages);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerViewAdapter = new RecyclerViewAdapter(this, imagesFromDB);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
-
 
     /*
     DB OBSERVERS INITIALISATION
@@ -277,6 +291,11 @@ public class MainActivity extends AppCompatActivity {
 
 
             if (allImageFolders.size() > 0) {
+                //clear search view
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                toolbar.collapseActionView();
+
+                //start ML service
                 Intent intent = new Intent(this, MLForegroundService.class);
                 intent.putExtra("allImageFolders", allImageFolders);
                 intent.putExtra("command", "Refresh");

@@ -21,6 +21,7 @@
     <string name="dropdownAbout">About</string>
     <string name="dropdownInstructions">Help</string>
     <string name="dropdownClearCache">Clear scan cache</string>
+    <string name="dropdownRefresh">Refresh scan</string>
 
     <string name="clearCacheTitle">Delete all scanned images?</string>
     <string name="clearCacheText">Are you sure you want to delete all scanned images?</string>
