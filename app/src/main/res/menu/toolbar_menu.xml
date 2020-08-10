@@ -17,6 +17,10 @@
         android:title="@string/dropdownInstructions"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/dropdown_menu_refresh"
+        android:title="refresh"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/toolbar_search"
         android:icon="@drawable/ic_search_white_24dp"
         android:title="@string/inputFieldHint"

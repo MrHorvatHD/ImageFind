@@ -70,6 +70,11 @@ public class ImageRepository {
         });
     }
 
+    //deletes all images from database
+    public List<ImageEntityDB> getAllImagesFromDB(){
+        return imageDAO.getAllImagesFromDB();
+    }
+
     public LiveData<List<ImageEntityDB>> getAllImages() {
         return allImages;
     }

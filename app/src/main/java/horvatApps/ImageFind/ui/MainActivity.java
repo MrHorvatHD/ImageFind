@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import horvatApps.ImageFind.Adapters.RecyclerViewAdapter;
@@ -35,8 +38,7 @@ import horvatApps.ImageFind.R;
 import horvatApps.ImageFind.db.models.ImageDetail;
 import horvatApps.ImageFind.db.models.ImageEntityDB;
 import horvatApps.ImageFind.db.models.Mapper;
-import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment1;
-import horvatApps.ImageFind.ui.InstructionFragments.InstructionFragment2;
+import horvatApps.ImageFind.logic.MLForegroundService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -143,6 +145,15 @@ public class MainActivity extends AppCompatActivity {
             case R.id.dropdown_menu_instructions:
                 startActivity(new Intent(this, InstructionsActivity.class));
                 return true;
+
+            case R.id.dropdown_menu_refresh:
+                //if scan not in progres start refresh
+                if(!isServiceRunning(this,MLForegroundService.class))
+                    checkForNewImages();
+                else
+                    Toast.makeText(this, getString(R.string.toastScanAlert), Toast.LENGTH_LONG).show();
+
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -188,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                //updates Recycler view only ever 0.5 sec
-                if (lastUpdateTime == 0 || queryLength == 0 && System.currentTimeMillis() - lastUpdateTime >= 500)
+                //updates Recycler view only every 1 sec
+                if (lastUpdateTime == 0 || queryLength == 0 && System.currentTimeMillis() - lastUpdateTime >= 1000)
                     try {
                         imagesFromDB.clear();
                         for (ImageEntityDB imageEntityDB : imageEntityDBS) {
@@ -229,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-    HANDLES REMOVED IMAGES FROM DEVICE
+    HANDLES REMOVED IMAGES FROM DEVICE AND REFFRESHING OF IMAGES IN FOLDERS
     ----------------------------------------------------------------------------------------------------------
      */
 
@@ -250,6 +261,30 @@ public class MainActivity extends AppCompatActivity {
                 mainViewModel.deleteImages(imagesToDelete);
         }
     }
+
+    private void checkForNewImages(){
+        //check for files acces permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
+            String scannedFolders = sharedPref.getString("ScannedFolders", "none");
+
+            if(scannedFolders.equals("none"))
+                return;
+
+            String[] foldersToCheck = scannedFolders.split(",");
+            ArrayList<String> allImageFolders = new ArrayList<>(Arrays.asList(foldersToCheck));
+
+
+            if (allImageFolders.size() > 0) {
+                Intent intent = new Intent(this, MLForegroundService.class);
+                intent.putExtra("allImageFolders", allImageFolders);
+                intent.putExtra("command", "Refresh");
+                startService(intent);
+            }
+        }
+    }
+
 
     //fetches uri of all images on device
     private ArrayList<String> getAllImageUrisOnDevice() {
@@ -279,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
         return imageUris;
     }
 
+
     /*
     HANDLE SHARED PREFFERENCES
     ----------------------------------------------------------------------------------------------------------
@@ -305,6 +341,21 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ScanActivity.class);
             startActivity(intent);
         }
+    }
+
+    /*
+    CHECKS IF SERVICE IS RUNNING
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+    public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return service.foreground;
+            }
+        }
+        return false;
     }
 
 }

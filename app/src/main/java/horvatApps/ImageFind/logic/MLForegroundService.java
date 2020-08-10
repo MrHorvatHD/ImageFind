@@ -27,11 +27,14 @@ import com.google.mlkit.vision.text.TextRecognizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
 
 import horvatApps.ImageFind.R;
 import horvatApps.ImageFind.db.ImageRepository;
 import horvatApps.ImageFind.db.models.ImageDetail;
+import horvatApps.ImageFind.db.models.ImageEntityDB;
+import horvatApps.ImageFind.ui.MainActivity;
 
 import static horvatApps.ImageFind.db.models.Mapper.imageDetailToImageEntity;
 
@@ -44,6 +47,7 @@ public class MLForegroundService extends Service {
     //global arrays for image processing
     private ArrayList<String> allImageFolders;
     private ArrayList<ImageDetail> allImagesSelectedForML;
+    private String command;
     ImageRepository imageRepository;
 
     //creates an notification channel
@@ -58,6 +62,7 @@ public class MLForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         this.allImageFolders = intent.getStringArrayListExtra("allImageFolders");
+        this.command = intent.getStringExtra("command");
         this.imageRepository = new ImageRepository(getApplication());
 
         //start a new thread for OCR
@@ -87,13 +92,40 @@ public class MLForegroundService extends Service {
     *  Starts image procesing one by one
     * */
     private void runMain(){
-        allImagesSelectedForML = getImageList();
-
+        allImagesSelectedForML = new ArrayList<>();
         builder = new NotificationCompat.Builder(this, "ProgressNotification");
         startForeground(69, createNotification());
 
-        for (int i = 0; i < allImagesSelectedForML.size(); i++) {
-            runTextRecognitionOnImage(allImagesSelectedForML.get(i),i+1);
+        //either scans the whole folder or finds images from folders that have not been scanned yet
+        if(this.command.equals("Scan")) {
+            allImagesSelectedForML = getImageList();
+            for (int i = 0; i < allImagesSelectedForML.size(); i++) {
+                runTextRecognitionOnImage(allImagesSelectedForML.get(i), i + 1);
+            }
+        }
+        else if(this.command.equals("Refresh")){
+            //get all images in DB
+            HashSet<String> uriInDB = new HashSet<>();
+            for(ImageEntityDB imgDB : imageRepository.getAllImagesFromDB())
+                uriInDB.add(imgDB.getUri());
+
+            //find all images not yet scanned
+            ArrayList<ImageDetail> imagesToCheck = getImageList();
+            for(ImageDetail img : imagesToCheck){
+                if(!uriInDB.contains(img.getUri().toString())) {
+                    allImagesSelectedForML.add(img);
+                    System.out.println(img.getName());
+                }
+            }
+
+            if(allImagesSelectedForML.size() == 0)
+                this.stopSelf();
+
+
+            //start the ML if at least 1 img found
+            for (int i = 0; i < allImagesSelectedForML.size(); i++) {
+                runTextRecognitionOnImage(allImagesSelectedForML.get(i), i + 1);
+            }
         }
     }
 

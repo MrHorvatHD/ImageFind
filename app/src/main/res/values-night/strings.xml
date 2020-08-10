@@ -72,6 +72,9 @@
     <string name="InstFrag5Button">Start</string>
 
 
+    <string name="toastScanAlert">Image scan is already in progress!</string>
+
+
 
 
 </resources>

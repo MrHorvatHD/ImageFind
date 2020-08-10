@@ -20,6 +20,9 @@ public interface ImageDAO {
     @Query("SELECT * FROM images")
     LiveData<List<ImageEntityDB>> getAllImages();
 
+    @Query("SELECT * FROM images")
+    List<ImageEntityDB> getAllImagesFromDB();
+
     @Query("SELECT * FROM images WHERE imageText LIKE '%' || :param || '%'")
     List<ImageEntityDB> searchImages(String param);
 

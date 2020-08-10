@@ -1,6 +1,8 @@
 package horvatApps.ImageFind.ui;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,6 +142,7 @@ public class ScanActivity extends AppCompatActivity {
         //updates shared preferences
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("LastScan", "never");
+        editor.putString("ScannedFolders", "");
         editor.apply();
 
         //updates UI
@@ -205,9 +209,6 @@ public class ScanActivity extends AppCompatActivity {
         folderSelectorBuilder.setPositiveButton(R.string.scanDialogConfirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //stores last scan date in shared prefernces
-                storeSharedPref();
-
                 //starts scanning service
                 startService(foldersFound, checkedItems);
             }
@@ -264,9 +265,13 @@ public class ScanActivity extends AppCompatActivity {
                 selectedFolders.add("'" + foldersFound[i] + "'");
         }
 
+        //stores last scan date in shared prefernces
+        storeSharedPref(selectedFolders);
+
         //starts the foreground service
         Intent intent = new Intent(this, MLForegroundService.class);
         intent.putExtra("allImageFolders", selectedFolders);
+        intent.putExtra("command", "Scan");
         startService(intent);
     }
 
@@ -277,15 +282,21 @@ public class ScanActivity extends AppCompatActivity {
      */
 
     //stores last scan time in shared preferences
-    public void storeSharedPref() {
+    public void storeSharedPref(ArrayList<String> selectedFolders) {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
 
         //formats last scan time
         SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         String lastScanTimeText = s.format(new Date());
 
+        //format selected folders
+        String scannedFolders = "";
+        for(String folder : selectedFolders)
+            scannedFolders = scannedFolders.concat(folder + ",");
+
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("LastScan", lastScanTimeText);
+        editor.putString("ScannedFolders", scannedFolders);
         editor.apply();
 
         //update UI
@@ -309,7 +320,7 @@ public class ScanActivity extends AppCompatActivity {
      */
 
     //gets all available image folders on device
-    private ArrayList<String> getImageFolders() {
+    /*private ArrayList<String> getImageFolders() {
         ArrayList<String> allFolders = new ArrayList<String>();
 
         String[] projection = new String[]{MediaStore.MediaColumns.BUCKET_DISPLAY_NAME};
@@ -341,8 +352,8 @@ public class ScanActivity extends AppCompatActivity {
 
         }
         return allFolders;
-    }
-    /*private ArrayList<String> getImageFolders() {
+    }*/
+    private ArrayList<String> getImageFolders() {
         ArrayList<String> allFolders = new ArrayList<String>();
 
         String[] projection = {"DISTINCT " + MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
@@ -365,7 +376,7 @@ public class ScanActivity extends AppCompatActivity {
         }
 
         return allFolders;
-    }*/
+    }
 
 
     /*
@@ -422,8 +433,11 @@ public class ScanActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
 
-            //builds folder selector
-            buildFolderSelector();
+            //If service is not running builds folder selector
+            if(!isServiceRunning(this, MLForegroundService.class))
+                buildFolderSelector();
+            else
+                Toast.makeText(this, getString(R.string.toastScanAlert), Toast.LENGTH_LONG).show();
 
         }
         //if permission not granted check if app should show rationale dialog
@@ -465,6 +479,21 @@ public class ScanActivity extends AppCompatActivity {
                     buildDeniedDialog();
                 }
         }
+    }
+
+    /*
+    CHECKS IF SERVICE IS RUNNING
+    ----------------------------------------------------------------------------------------------------------
+     */
+
+    public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return service.foreground;
+            }
+        }
+        return false;
     }
 
 
