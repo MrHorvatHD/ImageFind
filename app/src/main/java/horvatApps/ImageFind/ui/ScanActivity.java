@@ -290,7 +290,7 @@ public class ScanActivity extends AppCompatActivity {
         String lastScanTimeText = s.format(new Date());
 
         //format selected folders
-        String scannedFolders = "";
+        String scannedFolders = sharedPref.getString("ScannedFolders", "NoFoldersFoundPlsWork");
         for(String folder : selectedFolders)
             scannedFolders = scannedFolders.concat(folder + ",");
 

@@ -39,7 +39,7 @@
 
     <string name="scanInstructions"><b>ImageFind</b> lets you search the text in your images. Before you can do that,
         the app needs to process the images.\nTo do so, click the <b>\"New Scan\"</b> button and in the multiple choice menu,
-    select the folders from which the images will be scanned.\n\nRescanning the same folder again will find new images and update older ones, if changes have been made to them.\n\nScan time depends on the devices CPU and the number of selected images, so it could take a while.
+    select the folders from which the images will be scanned.\n\nRescanning the same folder again will find new images and update older ones, if changes have been made to them.\n\nScan time depends on the device\'s CPU and the number of selected images, so it could take a while.
     </string>
 
     <string name="permissionRationale">To process new images, the app needs access to device storage!</string>
@@ -74,6 +74,7 @@
 
 
     <string name="toastScanAlert">Image scan is already in progress!</string>
+    <string name="toastRefreshStart">Refreshing images</string>
 
 
 

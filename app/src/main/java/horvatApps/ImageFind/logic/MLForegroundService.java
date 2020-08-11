@@ -114,7 +114,7 @@ public class MLForegroundService extends Service {
             for(ImageDetail img : imagesToCheck){
                 if(!uriInDB.contains(img.getUri().toString())) {
                     allImagesSelectedForML.add(img);
-                    System.out.println(img.getName());
+                    //System.out.println(img.getName());
                 }
             }
 
@@ -213,8 +213,6 @@ public class MLForegroundService extends Service {
                 String name = cursor.getString(nameColumn);
                 String thumb = cursor.getString(dataColumn);
                 String bucket = cursor.getString(bucketColumn);
-
-                System.out.println(bucket);
 
                 Uri contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 

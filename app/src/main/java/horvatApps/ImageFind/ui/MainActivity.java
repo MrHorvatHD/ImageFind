@@ -149,8 +149,8 @@ public class MainActivity extends AppCompatActivity{
                 return true;
 
             case R.id.dropdown_menu_refresh:
-                //start refresh only if 10 sec from and ML service not already running
-                if(!isServiceRunning(this,MLForegroundService.class) && System.currentTimeMillis() - lastRefreshTime >= 10000) {
+                //start refresh only if 20 sec from and ML service not already running
+                if(!isServiceRunning(this,MLForegroundService.class) && System.currentTimeMillis() - lastRefreshTime >= 20000) {
                     checkForNewImages();
                     lastRefreshTime = System.currentTimeMillis();
                 }
@@ -178,8 +178,10 @@ public class MainActivity extends AppCompatActivity{
         //init of swipe refresh
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if(!isServiceRunning(this,MLForegroundService.class))
+            if(!isServiceRunning(this,MLForegroundService.class) && System.currentTimeMillis() - lastRefreshTime >= 20000) {
                 checkForNewImages();
+                lastRefreshTime = System.currentTimeMillis();
+            }
             else
                 Toast.makeText(this, getString(R.string.toastScanAlert), Toast.LENGTH_LONG).show();
 
@@ -281,19 +283,21 @@ public class MainActivity extends AppCompatActivity{
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
             SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("ImageScanPref", 0);
-            String scannedFolders = sharedPref.getString("ScannedFolders", "none");
+            String scannedFolders = sharedPref.getString("ScannedFolders", "NoFoldersFoundPlsWork");
 
-            if(scannedFolders.equals("none"))
+            if(scannedFolders.equals("NoFoldersFoundPlsWork"))
                 return;
 
             String[] foldersToCheck = scannedFolders.split(",");
             ArrayList<String> allImageFolders = new ArrayList<>(Arrays.asList(foldersToCheck));
 
-
             if (allImageFolders.size() > 0) {
                 //clear search view
                 Toolbar toolbar = findViewById(R.id.toolbar);
                 toolbar.collapseActionView();
+
+                //toast that it's refreshing
+                Toast.makeText(this, getString(R.string.toastRefreshStart), Toast.LENGTH_LONG).show();
 
                 //start ML service
                 Intent intent = new Intent(this, MLForegroundService.class);
