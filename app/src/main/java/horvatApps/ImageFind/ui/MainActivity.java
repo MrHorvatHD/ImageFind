@@ -30,9 +30,12 @@ import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import horvatApps.ImageFind.Adapters.RecyclerViewAdapter;
 import horvatApps.ImageFind.R;
@@ -288,9 +291,11 @@ public class MainActivity extends AppCompatActivity{
             if(scannedFolders.equals("NoFoldersFoundPlsWork"))
                 return;
 
+            //gets all folder that were already scanned
             String[] foldersToCheck = scannedFolders.split(",");
             ArrayList<String> allImageFolders = new ArrayList<>(Arrays.asList(foldersToCheck));
 
+            //if any folder found, refresh it
             if (allImageFolders.size() > 0) {
                 //clear search view
                 Toolbar toolbar = findViewById(R.id.toolbar);
@@ -298,6 +303,15 @@ public class MainActivity extends AppCompatActivity{
 
                 //toast that it's refreshing
                 Toast.makeText(this, getString(R.string.toastRefreshStart), Toast.LENGTH_LONG).show();
+
+                //formats last scan time
+                SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                String lastScanTimeText = s.format(new Date());
+
+                //update last scan time
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("LastScan", lastScanTimeText);
+                editor.apply();
 
                 //start ML service
                 Intent intent = new Intent(this, MLForegroundService.class);
@@ -348,7 +362,7 @@ public class MainActivity extends AppCompatActivity{
         String lastScanTime = sharedPref.getString("LastScan", "never");
         boolean isFirst = sharedPref.getBoolean("isFirst", true);
 
-        //if the instructions guide hasn't already been shown redirect to it
+        //if the instructions guide hasn't already been shown, redirect to it
         if (isFirst) {
             //starts instructions activity on a new stack
             Intent intent = new Intent(this, InstructionsActivity.class);
@@ -356,7 +370,7 @@ public class MainActivity extends AppCompatActivity{
             startActivity(intent);
         }
 
-        //checks shared prefferences for the date of last scan
+        //checks shared preferences for the date of last scan
         else if (lastScanTime.equals("never") && !redirected) {
             redirected = true;
 

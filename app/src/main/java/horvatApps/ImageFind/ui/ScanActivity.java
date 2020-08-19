@@ -142,7 +142,7 @@ public class ScanActivity extends AppCompatActivity {
         //updates shared preferences
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("LastScan", "never");
-        editor.putString("ScannedFolders", "");
+        editor.putString("ScannedFolders", "NoFoldersFoundPlsWork");
         editor.apply();
 
         //updates UI
