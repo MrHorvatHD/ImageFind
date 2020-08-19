@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="horvatApps.ImageFind">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="horvatApps.ImageFind"
+    tools:ignore="LockedOrientationActivity">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -13,8 +15,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.InstructionsActivity" />
-        <activity android:name=".ui.ShareIntentActivity">
+        <activity android:name=".ui.InstructionsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ShareIntentActivity"
+            android:screenOrientation="portrait">
             <intent-filter
                 android:icon="@mipmap/ic_launcher_adaptive"
                 android:label="@string/intent_label"
@@ -26,17 +30,20 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AboutActivity" />
+        <activity android:name=".ui.AboutActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ScanActivity" />
+        <activity android:name=".ui.ScanActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".logic.MLForegroundService" />
     </application>
