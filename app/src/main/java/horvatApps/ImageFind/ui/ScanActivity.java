@@ -289,9 +289,13 @@ public class ScanActivity extends AppCompatActivity {
         SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
         String lastScanTimeText = s.format(new Date());
 
-        //format selected folders
         String scannedFolders = sharedPref.getString("ScannedFolders", "NoFoldersFoundPlsWork");
-        for(String folder : selectedFolders)
+        //checks for first scan
+        if (scannedFolders.contains("NoFoldersFoundPlsWork"))
+            scannedFolders = "";
+
+        //format selected folders
+        for (String folder : selectedFolders)
             scannedFolders = scannedFolders.concat(folder + ",");
 
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -434,7 +438,7 @@ public class ScanActivity extends AppCompatActivity {
                 PackageManager.PERMISSION_GRANTED) {
 
             //If service is not running builds folder selector
-            if(!isServiceRunning(this, MLForegroundService.class))
+            if (!isServiceRunning(this, MLForegroundService.class))
                 buildFolderSelector();
             else
                 Toast.makeText(this, getString(R.string.toastScanAlert), Toast.LENGTH_LONG).show();

@@ -33,7 +33,7 @@
     <string name="notificationContentText">Processed</string>
     <string name="notificationContentTitle">Scan in progress</string>
 
-    <string name="lastScanNever">Last scan: Never</string>
+    <string name="lastScanNever">Last scan: never</string>
     <string name="lastScan">Last scan: </string>
 
     <string name="scanInstructions"><b>ImageFind</b> lets you search the text in your images. Before you can do that,
