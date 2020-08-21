@@ -23,6 +23,6 @@ By clicking on the image, it's opened in the default gallery app or alternativel
 
 ## Accessing recognised text
 
-<img src="https://github.com/MrHorvatHD/ImageFind/blob/master/img/ImageDetail.jpg" width="540" height="600"/>
+<img src="https://github.com/MrHorvatHD/ImageFind/blob/master/img/ImageDetail.png" width="540" height="600"/>
 
 By long pressing on an image, it's opened in a new activity where you can copy the text recognised from it. The same functionality can be accessed by pressing the share button on any image outside the app.
