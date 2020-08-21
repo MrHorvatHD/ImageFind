@@ -157,6 +157,7 @@ public class MLForegroundService extends Service {
                                 public void onFailure(@NonNull Exception e) {
                                     // Task failed with an exception
                                     e.printStackTrace();
+                                    stopSelf();
                                 }
                             });
         } catch (IOException e) {
