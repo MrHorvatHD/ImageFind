@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">ImageFind</string>
     <string name="app_version">Version: 1.0</string>
-    <string name="app_description">ImageFind lets you search the text in your images by running machine learning OCR algorithm on your gallery.
-    The app was programmed with privacy in mind and the OCR is done completley on-device.</string>
+    <string name="app_description">ImageFind lets you search through and copy text from images in your gallery by running OCR algorithm on them.
+    The app was programmed with privacy in mind, the OCR is done completley on-device and at no point is any of your data transferred anywhere!</string>
     <string name="intent_label">Recognise text with ImageFind</string>
 
     <string name="app_developer_title">Developer:</string>
@@ -74,6 +74,7 @@
 
     <string name="toastScanAlert">Image scan is already in progress!</string>
     <string name="toastRefreshStart">Refreshing images</string>
+    <string name="toastNewScan">Scanning images</string>
 
 
 </resources>

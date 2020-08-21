@@ -31,7 +31,6 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -268,6 +267,8 @@ public class ScanActivity extends AppCompatActivity {
         //stores last scan date in shared prefernces
         storeSharedPref(selectedFolders);
 
+        Toast.makeText(this, getString(R.string.toastNewScan), Toast.LENGTH_LONG).show();
+
         //starts the foreground service
         Intent intent = new Intent(this, MLForegroundService.class);
         intent.putExtra("allImageFolders", selectedFolders);
@@ -324,7 +325,7 @@ public class ScanActivity extends AppCompatActivity {
      */
 
     //gets all available image folders on device
-    /*private ArrayList<String> getImageFolders() {
+    private ArrayList<String> getImageFolders() {
         ArrayList<String> allFolders = new ArrayList<String>();
 
         String[] projection = new String[]{MediaStore.MediaColumns.BUCKET_DISPLAY_NAME};
@@ -339,7 +340,7 @@ public class ScanActivity extends AppCompatActivity {
             int bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME);
 
             //required sorting of folders because DISTINCT keyword doesn't work anymore
-            HashSet<String> allFoldersHS = new HashSet();
+            HashSet<String> allFoldersHS = new HashSet<String>();
             while (cursor.moveToNext()) {
 
                 String bucket = cursor.getString(bucketColumn);
@@ -356,7 +357,8 @@ public class ScanActivity extends AppCompatActivity {
 
         }
         return allFolders;
-    }*/
+    }
+    /*
     private ArrayList<String> getImageFolders() {
         ArrayList<String> allFolders = new ArrayList<String>();
 
@@ -381,7 +383,7 @@ public class ScanActivity extends AppCompatActivity {
 
         return allFolders;
     }
-
+    */
 
     /*
     RATIONALE DIALOG

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import horvatApps.ImageFind.R;
 import horvatApps.ImageFind.ui.InstructionsActivity;
@@ -31,19 +32,21 @@ public class InstructionFragment5 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_instruction5, container, false);
 
         Button finishButton = view.findViewById(R.id.instructionButton);
-        finishButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                storeSharedPref();
+        finishButton.setOnClickListener(v -> finishClicked());
 
-                //starts main activity on a new stack
-                Intent intent = new Intent(getContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        });
+        ImageView imageView = view.findViewById(R.id.imageView);
+        imageView.setOnClickListener(v -> finishClicked());
 
         return view;
+    }
+
+    public void finishClicked(){
+        storeSharedPref();
+
+        //starts main activity on a new stack
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     //writes to the shared preferences

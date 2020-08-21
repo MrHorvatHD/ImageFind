@@ -226,8 +226,13 @@ public class MainActivity extends AppCompatActivity{
                             imagesFromDB.add(Mapper.imageEntityToImageDetail(imageEntityDB));
                         }
 
-                        //clears deleted images from database
-                        clearGoneImages();
+                        //clears deleted images from database in a new thread
+                        new Thread(new Runnable() {
+                            public void run() {
+                                clearGoneImages();
+                            }
+                        }).start();
+
 
                         recyclerViewAdapter.notifyDataSetChanged();
                         lastUpdateTime = System.currentTimeMillis();
@@ -265,20 +270,26 @@ public class MainActivity extends AppCompatActivity{
 
     //removes all images stored in the database that are not on device anymore
     private void clearGoneImages() {
-        //check for files acces permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        try {
+            //check for files acces permission
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-            ArrayList<String> allImageUris = getAllImageUrisOnDevice();
-            ArrayList<String> imagesToDelete = new ArrayList<String>();
+                ArrayList<String> allImageUris = getAllImageUrisOnDevice();
+                ArrayList<String> imagesToDelete = new ArrayList<String>();
 
-            for (ImageDetail imageDetail : imagesFromDB) {
-                if (!allImageUris.contains(imageDetail.getUri().toString()))
-                    imagesToDelete.add(imageDetail.getUri().toString());
+                for (ImageDetail imageDetail : imagesFromDB) {
+                    if (!allImageUris.contains(imageDetail.getUri().toString()))
+                        imagesToDelete.add(imageDetail.getUri().toString());
+                }
+
+                if (imagesToDelete.size() > 0)
+                    mainViewModel.deleteImages(imagesToDelete);
             }
-
-            if (imagesToDelete.size() > 0)
-                mainViewModel.deleteImages(imagesToDelete);
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     private void checkForNewImages(){

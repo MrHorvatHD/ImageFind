@@ -17,10 +17,10 @@ public interface ImageDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertImage(ImageEntityDB imageEntityDB);
 
-    @Query("SELECT * FROM images")
+    @Query("SELECT * FROM images ORDER BY name ASC")
     LiveData<List<ImageEntityDB>> getAllImages();
 
-    @Query("SELECT * FROM images")
+    @Query("SELECT * FROM images ORDER BY name ASC")
     List<ImageEntityDB> getAllImagesFromDB();
 
     @Query("SELECT * FROM images WHERE imageText LIKE '%' || :param || '%'")
